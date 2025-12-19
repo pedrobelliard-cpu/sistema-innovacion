@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sistema de Innovación | Registro Profesional</title>
+    <title>Sistema Proyecto de Innovación | Registro de seguimiento Profesional</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
@@ -22,9 +22,6 @@
                 <h1 class="text-3xl font-extrabold tracking-tight">Registro de Innovación</h1>
                 <p class="text-slate-400 mt-2 font-medium">Panel Centralizado de Seguimiento Regional</p>
             </div>
-            <div class="absolute top-0 right-0 p-8 opacity-10">
-                <svg width="100" height="100" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2L1 21h22L12 2zm0 3.45l8.27 14.3H3.73L12 5.45zM11 16h2v2h-2zm0-6h2v4h-2z"/></svg>
-            </div>
         </div>
 
         <form id="innovationForm" class="p-8 space-y-8">
@@ -32,7 +29,7 @@
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
                     <label class="block text-sm font-bold text-slate-700 mb-2">Regional / Sede *</label>
-                    <select id="regional" required class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 focus:ring-2 focus:ring-blue-500 transition-all outline-none">
+                    <select id="regional" required class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 focus:ring-2 focus:ring-blue-500 outline-none">
                         <option value="">Seleccione Regional...</option>
                         <option value="Cibao Norte">Cibao Norte</option>
                         <option value="Cibao Sur">Cibao Sur</option>
@@ -45,11 +42,13 @@
                 </div>
                 <div>
                     <label class="block text-sm font-bold text-slate-700 mb-2">Taller Responsable *</label>
-                    <select id="taller" required class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 focus:ring-2 focus:ring-blue-500 transition-all outline-none">
+                    <select id="taller" required class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 focus:ring-2 focus:ring-blue-500 outline-none">
                         <option value="">Seleccione Taller...</option>
                         <option value="Electrónica">Electrónica</option>
                         <option value="Informática">Informática</option>
                         <option value="Mecánica">Mecánica</option>
+                        <option value="Mecánica Industrial">Mecánica Industrial</option>
+                        <option value="Gastronomía y Hotelería">Gastronomía y Hotelería</option>
                         <option value="Ebanistería">Ebanistería</option>
                         <option value="Masaje">Masaje</option>
                         <option value="Artes Gráficas">Artes Gráficas</option>
@@ -62,38 +61,46 @@
 
             <div class="space-y-6">
                 <div>
-                    <label class="block text-sm font-bold text-slate-700 mb-2">Nombre del Proyecto de Innovación *</label>
-                    <input type="text" id="nombreProyecto" required placeholder="Ej: Sistema de Riego Automatizado" 
-                        class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 focus:ring-2 focus:ring-blue-500 outline-none">
+                    <label class="block text-sm font-bold text-slate-700 mb-2">Nombre del Proyecto *</label>
+                    <input type="text" id="nombreProyecto" required class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 focus:ring-2 focus:ring-blue-500 outline-none">
                 </div>
 
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    <div class="md:col-span-1">
+                    <div>
                         <label class="block text-sm font-bold text-slate-700 mb-2">Responsable *</label>
-                        <input type="text" id="responsable" required placeholder="Nombre completo"
-                            class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 focus:ring-2 focus:ring-blue-500 outline-none">
+                        <input type="text" id="responsable" required class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 focus:ring-2 focus:ring-blue-500 outline-none">
                     </div>
                     <div>
                         <label class="block text-sm font-bold text-slate-700 mb-2">Teléfono *</label>
-                        <input type="tel" id="telefono" required placeholder="Ej: 809-000-0000"
-                            class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 focus:ring-2 focus:ring-blue-500 outline-none">
+                        <input type="tel" id="telefono" required class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 focus:ring-2 focus:ring-blue-500 outline-none">
                     </div>
                     <div>
-                        <label class="block text-sm font-bold text-slate-700 mb-2">Correo Electrónico *</label>
-                        <input type="email" id="email" required placeholder="usuario@institucion.com"
-                            class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 focus:ring-2 focus:ring-blue-500 outline-none">
+                        <label class="block text-sm font-bold text-slate-700 mb-2">Correo *</label>
+                        <input type="email" id="email" required class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 focus:ring-2 focus:ring-blue-500 outline-none">
                     </div>
                 </div>
             </div>
 
-            <div>
-                <label class="block text-sm font-bold text-slate-700 mb-3">Prioridad del Proyecto</label>
-                <div class="flex gap-4">
-                    <button type="button" onclick="setPriority('Baja')" class="priority-btn flex-1 py-2 rounded-lg border-2 border-slate-200 font-bold text-slate-500 transition-all hover:bg-slate-50">Baja</button>
-                    <button type="button" onclick="setPriority('Media')" class="priority-btn flex-1 py-2 rounded-lg border-2 border-slate-200 font-bold text-slate-500 transition-all hover:bg-slate-50">Media</button>
-                    <button type="button" onclick="setPriority('Alta')" class="priority-btn flex-1 py-2 rounded-lg border-2 border-slate-200 font-bold text-slate-500 transition-all hover:bg-slate-50">Alta</button>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 p-6 bg-blue-50/50 rounded-2xl border border-blue-100">
+                <div>
+                    <label class="block text-sm font-bold text-blue-800 mb-2">Fecha de Seguimiento *</label>
+                    <input type="date" id="fechaSeguimiento" required class="w-full bg-white border border-blue-200 rounded-xl p-3 focus:ring-2 focus:ring-blue-500 outline-none">
                 </div>
-                <input type="hidden" id="prioridad" value="Media">
+                <div>
+                    <label class="block text-sm font-bold text-blue-800 mb-2">Prioridad</label>
+                    <div class="flex gap-2">
+                        <button type="button" onclick="setPriority('Baja')" class="priority-btn flex-1 py-2 rounded-lg border-2 border-slate-200 font-bold text-slate-500 transition-all hover:bg-slate-50 text-xs">Baja</button>
+                        <button type="button" onclick="setPriority('Media')" class="priority-btn flex-1 py-2 rounded-lg border-2 border-slate-200 font-bold text-slate-500 transition-all hover:bg-slate-50 text-xs">Media</button>
+                        <button type="button" onclick="setPriority('Alta')" class="priority-btn flex-1 py-2 rounded-lg border-2 border-slate-200 font-bold text-slate-500 transition-all hover:bg-slate-50 text-xs">Alta</button>
+                    </div>
+                    <input type="hidden" id="prioridad" value="Media">
+                </div>
+            </div>
+
+            <div>
+                <label class="block text-sm font-bold text-slate-700 mb-2">Recomendaciones u Mejoras Técnicas</label>
+                <textarea id="recomendaciones" rows="3" placeholder="Sugerencias para la optimización del proyecto..." 
+                    class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 focus:ring-2 focus:ring-blue-500 outline-none"></textarea>
             </div>
 
             <div class="bg-slate-50 p-6 rounded-2xl border border-slate-100">
@@ -101,24 +108,23 @@
                     <label class="font-bold text-slate-700">Estado de Avance</label>
                     <span id="progresoValor" class="bg-blue-600 text-white px-3 py-1 rounded-full text-sm font-bold shadow-lg">0%</span>
                 </div>
-                <input type="range" id="progreso" min="0" max="100" value="0" 
-                    class="w-full h-3 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-blue-600">
+                <input type="range" id="progreso" min="0" max="100" value="0" class="w-full h-3 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-blue-600">
                 
                 <div class="mt-6">
                     <label class="block text-sm font-bold text-slate-700 mb-2">KPIs e Indicadores de Éxito *</label>
-                    <textarea id="kpi" rows="3" required placeholder="Describa cómo medirá el éxito del proyecto..."
-                        class="w-full bg-white border border-slate-200 rounded-xl p-3 focus:ring-2 focus:ring-blue-500 outline-none"></textarea>
+                    <textarea id="kpi" rows="2" required class="w-full bg-white border border-slate-200 rounded-xl p-3 focus:ring-2 focus:ring-blue-500 outline-none"></textarea>
                 </div>
             </div>
 
-            <div class="flex flex-col md:flex-row gap-4 pt-4">
-                <button type="button" id="btnSalir" 
-                    class="order-2 md:order-1 flex-1 py-4 px-6 rounded-xl font-bold text-slate-600 border-2 border-slate-100 hover:bg-slate-50 transition-all">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 pt-4">
+                <button type="button" onclick="limpiarFormulario()" class="py-4 px-6 rounded-xl font-bold text-slate-600 bg-slate-100 hover:bg-slate-200 transition-all">
+                    Limpiar Formulario
+                </button>
+                <button type="button" onclick="if(confirm('¿Cerrar?')) window.close()" class="py-4 px-6 rounded-xl font-bold text-red-600 border-2 border-red-50 transition-all hover:bg-red-50">
                     Cerrar Sesión
                 </button>
-                <button type="submit" id="btnGuardar"
-                    class="order-1 md:order-2 flex-[2] py-4 px-6 rounded-xl font-bold text-white bg-blue-600 hover:bg-blue-700 shadow-xl shadow-blue-200 transition-all transform active:scale-95">
-                    Guardar Registro en Base de Datos
+                <button type="submit" id="btnGuardar" class="py-4 px-6 rounded-xl font-bold text-white bg-blue-600 hover:bg-blue-700 shadow-xl shadow-blue-200 transition-all transform active:scale-95">
+                    Guardar Registro
                 </button>
             </div>
         </form>
@@ -130,29 +136,31 @@
             const buttons = document.querySelectorAll('.priority-btn');
             buttons.forEach(btn => {
                 btn.classList.remove('active-high', 'active-medium', 'active-low', 'text-white');
-                if(btn.innerText === level) {
-                    btn.classList.add('active-' + level.toLowerCase(), 'text-white');
-                }
+                if(btn.innerText === level) btn.classList.add('active-' + level.toLowerCase(), 'text-white');
             });
+        }
+
+        function limpiarFormulario() {
+            if(confirm('¿Está seguro de limpiar todos los datos del formulario?')) {
+                document.getElementById('innovationForm').reset();
+                document.getElementById('progresoValor').textContent = '0%';
+                setPriority('Media');
+            }
         }
 
         const progreso = document.getElementById('progreso');
         const valor = document.getElementById('progresoValor');
         progreso.addEventListener('input', (e) => {
             valor.textContent = `${e.target.value}%`;
-            if(e.target.value > 80) valor.className = "bg-green-500 text-white px-3 py-1 rounded-full text-sm font-bold shadow-lg";
-            else if(e.target.value > 40) valor.className = "bg-blue-600 text-white px-3 py-1 rounded-full text-sm font-bold shadow-lg";
-            else valor.className = "bg-slate-600 text-white px-3 py-1 rounded-full text-sm font-bold shadow-lg";
         });
 
-        // RECUERDA: Pegar aquí tu URL de Google Apps Script
-        const scriptURL = 'TU_NUEVA_URL_DE_APPS_SCRIPT'; 
+        const scriptURL = 'TU_URL_DE_GOOGLE_APPS_SCRIPT'; 
 
         document.getElementById('innovationForm').addEventListener('submit', function(e) {
             e.preventDefault();
             const btn = document.getElementById('btnGuardar');
             btn.disabled = true;
-            btn.innerText = 'Procesando...';
+            btn.innerText = 'Enviando...';
 
             const payload = {
                 regional: document.getElementById('regional').value,
@@ -161,26 +169,24 @@
                 responsable: document.getElementById('responsable').value,
                 telefono: document.getElementById('telefono').value,
                 email: document.getElementById('email').value,
+                fechaSeguimiento: document.getElementById('fechaSeguimiento').value,
                 prioridad: document.getElementById('prioridad').value,
+                recomendaciones: document.getElementById('recomendaciones').value,
                 progreso: document.getElementById('progreso').value,
                 kpi: document.getElementById('kpi').value
             };
 
             fetch(scriptURL, { method: 'POST', body: JSON.stringify(payload) })
                 .then(res => {
-                    alert('🚀 Registro actualizado correctamente.');
+                    alert('✅ Registro guardado y sincronizado con éxito.');
                     this.reset();
-                    valor.textContent = '0%';
+                    document.getElementById('progresoValor').textContent = '0%';
                 })
-                .catch(err => alert('Error: ' + err.message))
+                .catch(err => alert('Error al guardar: ' + err.message))
                 .finally(() => {
                     btn.disabled = false;
-                    btn.innerText = 'Guardar Registro en Base de Datos';
+                    btn.innerText = 'Guardar Registro';
                 });
-        });
-
-        document.getElementById('btnSalir').addEventListener('click', () => {
-            if(confirm('¿Desea cerrar el formulario?')) window.close();
         });
     </script>
 </body>

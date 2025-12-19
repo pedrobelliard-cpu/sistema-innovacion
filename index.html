@@ -3,117 +3,183 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Registro de Innovación | Corporativo</title>
+    <title>Sistema de Innovación | Registro Profesional</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Inter', sans-serif; }
-        .glass-effect { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); }
+        body { font-family: 'Plus Jakarta Sans', sans-serif; }
+        .glass { background: rgba(255, 255, 255, 0.9); backdrop-filter: blur(10px); }
+        .priority-btn.active-high { background-color: #ef4444; color: white; border-color: #ef4444; }
+        .priority-btn.active-medium { background-color: #f59e0b; color: white; border-color: #f59e0b; }
+        .priority-btn.active-low { background-color: #10b981; color: white; border-color: #10b981; }
     </style>
 </head>
-<body class="bg-slate-50 min-h-screen flex items-center justify-center p-4">
+<body class="bg-gradient-to-br from-slate-100 to-blue-50 min-h-screen p-4 md:p-8">
 
-    <div class="max-w-2xl w-full bg-white rounded-2xl shadow-xl overflow-hidden border border-slate-200 glass-effect">
-        
-        <div class="bg-indigo-700 p-6">
-            <h2 class="text-white text-2xl font-bold">Gestión de Proyectos de Innovación</h2>
-            <p class="text-indigo-100 text-sm">Registre y actualice el progreso de las iniciativas regionales.</p>
+    <div class="max-w-4xl mx-auto bg-white rounded-3xl shadow-2xl overflow-hidden border border-white/20 glass">
+        <div class="bg-slate-900 p-8 text-white relative">
+            <div class="relative z-10">
+                <h1 class="text-3xl font-extrabold tracking-tight">Registro de Innovación</h1>
+                <p class="text-slate-400 mt-2 font-medium">Panel Centralizado de Seguimiento Regional</p>
+            </div>
+            <div class="absolute top-0 right-0 p-8 opacity-10">
+                <svg width="100" height="100" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2L1 21h22L12 2zm0 3.45l8.27 14.3H3.73L12 5.45zM11 16h2v2h-2zm0-6h2v4h-2z"/></svg>
+            </div>
         </div>
 
-        <form id="innovationForm" class="p-8 space-y-6">
+        <form id="innovationForm" class="p-8 space-y-8">
             
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div class="flex flex-col">
-                    <label for="regional" class="text-sm font-semibold text-slate-700 mb-1">Regional *</label>
-                    <select id="regional" required class="border border-slate-300 rounded-lg p-2.5 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all">
-                        <option value="">Seleccione una regional...</option>
-                        <option value="norte">Regional Norte</option>
-                        <option value="sur">Regional Sur</option>
-                        <option value="este">Regional Este</option>
-                        <option value="oeste">Regional Oeste</option>
-                        <option value="central">Sede Central</option>
+                <div>
+                    <label class="block text-sm font-bold text-slate-700 mb-2">Regional / Sede *</label>
+                    <select id="regional" required class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 focus:ring-2 focus:ring-blue-500 transition-all outline-none">
+                        <option value="">Seleccione Regional...</option>
+                        <option value="Norte">Regional Norte</option>
+                        <option value="Sur">Regional Sur</option>
+                        <option value="Este">Regional Este</option>
+                        <option value="Oeste">Regional Oeste</option>
                     </select>
                 </div>
-
-                <div class="flex flex-col">
-                    <label for="responsable" class="text-sm font-semibold text-slate-700 mb-1">Responsable del Proyecto *</label>
-                    <input type="text" id="responsable" placeholder="Nombre del líder" required
-                        class="border border-slate-300 rounded-lg p-2.5 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all">
+                <div>
+                    <label class="block text-sm font-bold text-slate-700 mb-2">Taller Responsable *</label>
+                    <select id="taller" required class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 focus:ring-2 focus:ring-blue-500 transition-all outline-none">
+                        <option value="">Seleccione Taller...</option>
+                        <option value="Electrónica">Electrónica</option>
+                        <option value="Informática">Informática</option>
+                        <option value="Mecánica">Mecánica</option>
+                        <option value="Ebanistería">Ebanistería</option>
+                        <option value="Masaje">Masaje</option>
+                        <option value="Artes Gráficas">Artes Gráficas</option>
+                        <option value="Electricidad">Electricidad</option>
+                    </select>
                 </div>
             </div>
 
-            <div class="flex flex-col">
-                <label for="nombreProyecto" class="text-sm font-semibold text-slate-700 mb-1">Nombre del Proyecto *</label>
-                <input type="text" id="nombreProyecto" placeholder="Ej: Optimización de procesos IA" required
-                    class="border border-slate-300 rounded-lg p-2.5 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all">
+            <hr class="border-slate-100">
+
+            <div class="space-y-6">
+                <div>
+                    <label class="block text-sm font-bold text-slate-700 mb-2">Nombre del Proyecto de Innovación *</label>
+                    <input type="text" id="nombreProyecto" required placeholder="Ej: Sistema de Riego Automatizado" 
+                        class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 focus:ring-2 focus:ring-blue-500 outline-none">
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div class="md:col-span-1">
+                        <label class="block text-sm font-bold text-slate-700 mb-2">Responsable *</label>
+                        <input type="text" id="responsable" required placeholder="Nombre completo"
+                            class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 focus:ring-2 focus:ring-blue-500 outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-bold text-slate-700 mb-2">Teléfono *</label>
+                        <input type="tel" id="telefono" required placeholder="Ej: 809-000-0000"
+                            class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 focus:ring-2 focus:ring-blue-500 outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-bold text-slate-700 mb-2">Correo Electrónico *</label>
+                        <input type="email" id="email" required placeholder="usuario@institucion.com"
+                            class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 focus:ring-2 focus:ring-blue-500 outline-none">
+                    </div>
+                </div>
             </div>
 
-            <div class="flex flex-col">
-                <div class="flex justify-between mb-1">
-                    <label for="progreso" class="text-sm font-semibold text-slate-700">Progreso del Proyecto</label>
-                    <span id="progresoValor" class="text-sm font-bold text-indigo-600 bg-indigo-50 px-2 py-1 rounded">0%</span>
+            <div>
+                <label class="block text-sm font-bold text-slate-700 mb-3">Prioridad del Proyecto</label>
+                <div class="flex gap-4">
+                    <button type="button" onclick="setPriority('Baja')" class="priority-btn flex-1 py-2 rounded-lg border-2 border-slate-200 font-bold text-slate-500 transition-all hover:bg-slate-50">Baja</button>
+                    <button type="button" onclick="setPriority('Media')" class="priority-btn flex-1 py-2 rounded-lg border-2 border-slate-200 font-bold text-slate-500 transition-all hover:bg-slate-50">Media</button>
+                    <button type="button" onclick="setPriority('Alta')" class="priority-btn flex-1 py-2 rounded-lg border-2 border-slate-200 font-bold text-slate-500 transition-all hover:bg-slate-50">Alta</button>
+                </div>
+                <input type="hidden" id="prioridad" value="Media">
+            </div>
+
+            <div class="bg-slate-50 p-6 rounded-2xl border border-slate-100">
+                <div class="flex justify-between items-center mb-4">
+                    <label class="font-bold text-slate-700">Estado de Avance</label>
+                    <span id="progresoValor" class="bg-blue-600 text-white px-3 py-1 rounded-full text-sm font-bold shadow-lg">0%</span>
                 </div>
                 <input type="range" id="progreso" min="0" max="100" value="0" 
-                    class="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-indigo-600">
+                    class="w-full h-3 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-blue-600">
+                
+                <div class="mt-6">
+                    <label class="block text-sm font-bold text-slate-700 mb-2">KPIs e Indicadores de Éxito *</label>
+                    <textarea id="kpi" rows="3" required placeholder="Describa cómo medirá el éxito del proyecto..."
+                        class="w-full bg-white border border-slate-200 rounded-xl p-3 focus:ring-2 focus:ring-blue-500 outline-none"></textarea>
+                </div>
             </div>
 
-            <div class="flex flex-col">
-                <label for="kpi" class="text-sm font-semibold text-slate-700 mb-1">KPI del Proyecto (Métricas clave) *</label>
-                <textarea id="kpi" rows="3" placeholder="Describa los indicadores de éxito..." required
-                    class="border border-slate-300 rounded-lg p-2.5 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all"></textarea>
-            </div>
-
-            <div class="flex items-center justify-end space-x-4 pt-4 border-t border-slate-100">
+            <div class="flex flex-col md:flex-row gap-4 pt-4">
                 <button type="button" id="btnSalir" 
-                    class="px-6 py-2.5 rounded-lg text-slate-600 font-medium hover:bg-slate-100 transition-colors border border-slate-200">
-                    Salir
+                    class="order-2 md:order-1 flex-1 py-4 px-6 rounded-xl font-bold text-slate-600 border-2 border-slate-100 hover:bg-slate-50 transition-all">
+                    Cerrar Sesión
                 </button>
-                <button type="submit" 
-                    class="px-8 py-2.5 rounded-lg bg-emerald-600 text-white font-bold shadow-lg hover:bg-emerald-700 hover:shadow-emerald-200/50 transition-all transform active:scale-95">
-                    Guardar Proyecto
+                <button type="submit" id="btnGuardar"
+                    class="order-1 md:order-2 flex-[2] py-4 px-6 rounded-xl font-bold text-white bg-blue-600 hover:bg-blue-700 shadow-xl shadow-blue-200 transition-all transform active:scale-95">
+                    Guardar Registro en Base de Datos
                 </button>
             </div>
         </form>
     </div>
 
     <script>
-        // Actualizar el valor visual del progreso en tiempo real
-        const progresoInput = document.getElementById('progreso');
-        const progresoValor = document.getElementById('progresoValor');
+        // Manejo de Prioridad
+        function setPriority(level) {
+            document.getElementById('prioridad').value = level;
+            const buttons = document.querySelectorAll('.priority-btn');
+            buttons.forEach(btn => {
+                btn.classList.remove('active-high', 'active-medium', 'active-low', 'text-white');
+                if(btn.innerText === level) {
+                    btn.classList.add('active-' + level.toLowerCase());
+                }
+            });
+        }
 
-        progresoInput.addEventListener('input', (e) => {
-            progresoValor.textContent = `${e.target.value}%`;
+        // Slider dinámico
+        const progreso = document.getElementById('progreso');
+        const valor = document.getElementById('progresoValor');
+        progreso.addEventListener('input', (e) => {
+            valor.textContent = `${e.target.value}%`;
+            if(e.target.value > 80) valor.className = "bg-green-500 text-white px-3 py-1 rounded-full text-sm font-bold shadow-lg";
+            else if(e.target.value > 40) valor.className = "bg-blue-600 text-white px-3 py-1 rounded-full text-sm font-bold shadow-lg";
+            else valor.className = "bg-slate-600 text-white px-3 py-1 rounded-full text-sm font-bold shadow-lg";
         });
 
-        // Lógica del botón Salir
-        document.getElementById('btnSalir').addEventListener('click', () => {
-            if (confirm('¿Está seguro de que desea salir? Los cambios no guardados se perderán.')) {
-                // Aquí podrías redirigir a otra página, ej: window.location.href = 'dashboard.html';
-                alert('Saliendo del sistema...');
-            }
-        });
+        // Envío de Datos (Conectar con Google Sheets)
+        const scriptURL = 'PEGA_AQUI_TU_NUEVA_URL_DE_APPS_SCRIPT'; 
 
-        // Validación y envío del formulario
-        document.getElementById('innovationForm').addEventListener('submit', (e) => {
+        document.getElementById('innovationForm').addEventListener('submit', function(e) {
             e.preventDefault();
+            const btn = document.getElementById('btnGuardar');
+            btn.disabled = true;
+            btn.innerText = 'Procesando...';
 
-            // Simulación de guardado exitoso
-            const formData = {
+            const payload = {
                 regional: document.getElementById('regional').value,
-                responsable: document.getElementById('responsable').value,
+                taller: document.getElementById('taller').value,
                 nombre: document.getElementById('nombreProyecto').value,
+                responsable: document.getElementById('responsable').value,
+                telefono: document.getElementById('telefono').value,
+                email: document.getElementById('email').value,
+                prioridad: document.getElementById('prioridad').value,
                 progreso: document.getElementById('progreso').value,
                 kpi: document.getElementById('kpi').value
             };
 
-            console.log('Datos guardados:', formData);
-            
-            // Feedback al usuario
-            alert('✅ Proyecto guardado exitosamente en el sistema de innovación.');
-            
-            // Opcional: Reiniciar formulario
-            // e.target.reset();
-            // progresoValor.textContent = '0%';
+            fetch(scriptURL, { method: 'POST', body: JSON.stringify(payload) })
+                .then(res => {
+                    alert('🚀 Proyecto guardado con éxito en la nube.');
+                    this.reset();
+                    valor.textContent = '0%';
+                })
+                .catch(err => alert('Error: ' + err.message))
+                .finally(() => {
+                    btn.disabled = false;
+                    btn.innerText = 'Guardar Registro en Base de Datos';
+                });
+        });
+
+        document.getElementById('btnSalir').addEventListener('click', () => {
+            if(confirm('¿Desea cerrar el formulario?')) window.close();
         });
     </script>
 </body>

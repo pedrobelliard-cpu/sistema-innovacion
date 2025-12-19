@@ -9,198 +9,225 @@
     <style>
         body { font-family: 'Plus Jakarta Sans', sans-serif; }
         .glass { background: rgba(255, 255, 255, 0.9); backdrop-filter: blur(10px); }
-        
-        /* Estilos de botones de prioridad dinámicos */
-        .priority-btn.active-high { background-color: #ef4444 !important; color: white !important; border-color: #b91c1c !important; shadow: 0 4px 14px 0 rgba(239, 68, 68, 0.39); }
-        .priority-btn.active-medium { background-color: #f59e0b !important; color: white !important; border-color: #b45309 !important; shadow: 0 4px 14px 0 rgba(245, 158, 11, 0.39); }
-        .priority-btn.active-low { background-color: #10b981 !important; color: white !important; border-color: #047857 !important; shadow: 0 4px 14px 0 rgba(16, 185, 129, 0.39); }
+        .priority-btn.active-high { background-color: #ef4444 !important; color: white !important; }
+        .priority-btn.active-medium { background-color: #f59e0b !important; color: white !important; }
+        .priority-btn.active-low { background-color: #10b981 !important; color: white !important; }
+        .loader { border-top-color: #3498db; animation: spinner 1.5s linear infinite; }
+        @keyframes spinner { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
     </style>
 </head>
 <body class="bg-gradient-to-br from-slate-100 to-blue-50 min-h-screen p-4 md:p-8">
 
-    <div class="max-w-4xl mx-auto bg-white rounded-3xl shadow-2xl overflow-hidden border border-white/20 glass">
-        <div class="bg-slate-900 p-8 text-white relative">
-            <div class="relative z-10">
-                <h1 class="text-3xl font-extrabold tracking-tight text-white">Registro de proyecto de innovación</h1>
-                <p class="text-slate-400 mt-2 font-medium">Seguimiento Centralizado por Regionales</p>
+    <div class="max-w-4xl mx-auto space-y-6">
+        
+        <div class="bg-white p-4 rounded-2xl shadow-lg border border-blue-100 flex flex-col md:flex-row gap-4 items-center">
+            <div class="flex-1 w-full">
+                <label class="text-xs font-bold text-slate-500 uppercase ml-2">Consultar Registro por Cédula</label>
+                <div class="relative">
+                    <input type="text" id="busquedaCedula" placeholder="000-0000000-0" 
+                        class="w-full pl-4 pr-12 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none font-mono">
+                    <button onclick="buscarPorCedula()" class="absolute right-2 top-2 p-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-all">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                    </button>
+                </div>
+            </div>
+            <div id="statusBusqueda" class="hidden items-center text-sm text-blue-600 font-medium">
+                <div class="loader w-4 h-4 border-2 rounded-full mr-2"></div> Buscando...
             </div>
         </div>
 
-        <form id="innovationForm" class="p-8 space-y-8">
-            
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div>
-                    <label class="block text-sm font-bold text-slate-700 mb-2">Regional / Sede *</label>
-                    <select id="regional" required class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 focus:ring-2 focus:ring-blue-500 outline-none">
-                        <option value="">Seleccione Regional...</option>
-                        <option value="Cibao Norte">Cibao Norte</option>
-                        <option value="Cibao Sur">Cibao Sur</option>
-                        <option value="Oriental">Oriental</option>
-                        <option value="Metropolitana">Metropolitana</option>
-                        <option value="Norte">Regional Norte</option>
-                        <option value="Sur">Regional Sur</option>
-                        <option value="Este">Regional Este</option>
-                    </select>
-                </div>
-                <div>
-                    <label class="block text-sm font-bold text-slate-700 mb-2">Taller Responsable *</label>
-                    <select id="taller" required class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 focus:ring-2 focus:ring-blue-500 outline-none">
-                        <option value="">Seleccione Taller...</option>
-                        <option value="Electrónica">Electrónica</option>
-                        <option value="Informática">Informática</option>
-                        <option value="Mecánica">Mecánica</option>
-                        <option value="Mecánica Industrial">Mecánica Industrial</option>
-                        <option value="Gastronomía y Hotelería">Gastronomía y Hotelería</option>
-                        <option value="Ebanistería">Ebanistería</option>
-                        <option value="Masaje">Masaje</option>
-                        <option value="Artes Gráficas">Artes Gráficas</option>
-                        <option value="Electricidad">Electricidad</option>
-                    </select>
+        <div class="bg-white rounded-3xl shadow-2xl overflow-hidden border border-white/20 glass">
+            <div class="bg-slate-900 p-8 text-white relative">
+                <div class="relative z-10">
+                    <h1 class="text-3xl font-extrabold tracking-tight">Registro de proyecto de innovación</h1>
+                    <p class="text-slate-400 mt-2 font-medium">Seguimiento Centralizado por Regionales</p>
                 </div>
             </div>
 
-            <hr class="border-slate-100">
-
-            <div class="space-y-6">
-                <div>
-                    <label class="block text-sm font-bold text-slate-700 mb-2">Nombre del Proyecto *</label>
-                    <input type="text" id="nombreProyecto" required placeholder="Nombre descriptivo" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 focus:ring-2 focus:ring-blue-500 outline-none">
-                </div>
-
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    <div>
-                        <label class="block text-sm font-bold text-slate-700 mb-2">Responsable *</label>
-                        <input type="text" id="responsable" required placeholder="Nombre completo" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 focus:ring-2 focus:ring-blue-500 outline-none">
-                    </div>
-                    <div>
-                        <label class="block text-sm font-bold text-slate-700 mb-2">Teléfono *</label>
-                        <input type="tel" id="telefono" required placeholder="809-000-0000" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 focus:ring-2 focus:ring-blue-500 outline-none">
-                    </div>
-                    <div>
-                        <label class="block text-sm font-bold text-slate-700 mb-2">Correo *</label>
-                        <input type="email" id="email" required placeholder="correo@institucion.com" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 focus:ring-2 focus:ring-blue-500 outline-none">
-                    </div>
-                </div>
-            </div>
-
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 p-6 bg-blue-50/50 rounded-2xl border border-blue-100">
-                <div>
-                    <label class="block text-sm font-bold text-blue-800 mb-2">Fecha de Seguimiento *</label>
-                    <input type="date" id="fechaSeguimiento" required class="w-full bg-white border border-blue-200 rounded-xl p-3 focus:ring-2 focus:ring-blue-500 outline-none">
-                </div>
-                <div>
-                    <label class="block text-sm font-bold text-blue-800 mb-2">Nivel de Prioridad *</label>
-                    <div class="flex gap-2" id="priorityContainer">
-                        <button type="button" onclick="setPriority('Baja')" class="priority-btn flex-1 py-3 rounded-xl border-2 border-slate-200 font-bold text-slate-500 bg-white transition-all transform active:scale-95 shadow-sm">Baja</button>
-                        <button type="button" onclick="setPriority('Media')" class="priority-btn flex-1 py-3 rounded-xl border-2 border-slate-200 font-bold text-slate-500 bg-white transition-all transform active:scale-95 shadow-sm">Media</button>
-                        <button type="button" onclick="setPriority('Alta')" class="priority-btn flex-1 py-3 rounded-xl border-2 border-slate-200 font-bold text-slate-500 bg-white transition-all transform active:scale-95 shadow-sm">Alta</button>
-                    </div>
-                    <input type="hidden" id="prioridad" value="">
-                </div>
-            </div>
-
-            <div>
-                <label class="block text-sm font-bold text-slate-700 mb-2">Recomendaciones u Mejoras Técnicas</label>
-                <textarea id="recomendaciones" rows="3" placeholder="Espacio para notas técnicas..." class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 focus:ring-2 focus:ring-blue-500 outline-none"></textarea>
-            </div>
-
-            <div class="bg-slate-50 p-6 rounded-2xl border border-slate-100 shadow-inner">
-                <div class="flex justify-between items-center mb-4">
-                    <label class="font-bold text-slate-700">Estado de Avance Actual</label>
-                    <span id="progresoValor" class="bg-slate-900 text-white px-4 py-1 rounded-full text-sm font-bold">0%</span>
-                </div>
-                <input type="range" id="progreso" min="0" max="100" value="0" class="w-full h-3 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-blue-600">
+            <form id="innovationForm" class="p-8 space-y-8">
                 
-                <div class="mt-6">
-                    <label class="block text-sm font-bold text-slate-700 mb-2">KPIs e Indicadores de Éxito *</label>
-                    <textarea id="kpi" rows="2" required placeholder="Métricas de éxito..." class="w-full bg-white border border-slate-200 rounded-xl p-3 focus:ring-2 focus:ring-blue-500 outline-none"></textarea>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label class="block text-sm font-bold text-slate-700 mb-2">Regional / Sede *</label>
+                        <select id="regional" required class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 outline-none">
+                            <option value="">Seleccione...</option>
+                            <option value="Cibao Norte">Cibao Norte</option>
+                            <option value="Cibao Sur">Cibao Sur</option>
+                            <option value="Oriental">Oriental</option>
+                            <option value="Metropolitana">Metropolitana</option>
+                            <option value="Norte">Regional Norte</option>
+                            <option value="Sur">Regional Sur</option>
+                            <option value="Este">Regional Este</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-bold text-slate-700 mb-2">Taller Responsable *</label>
+                        <select id="taller" required class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 outline-none">
+                            <option value="">Seleccione Taller...</option>
+                            <option value="Electrónica">Electrónica</option>
+                            <option value="Informática">Informática</option>
+                            <option value="Mecánica">Mecánica</option>
+                            <option value="Mecánica Industrial">Mecánica Industrial</option>
+                            <option value="Gastronomía y Hotelería">Gastronomía y Hotelería</option>
+                            <option value="Ebanistería">Ebanistería</option>
+                            <option value="Masaje">Masaje</option>
+                            <option value="Artes Gráficas">Artes Gráficas</option>
+                            <option value="Electricidad">Electricidad</option>
+                        </select>
+                    </div>
                 </div>
-            </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 pt-4">
-                <button type="button" onclick="limpiarFormulario()" class="py-4 px-6 rounded-xl font-bold text-slate-600 bg-slate-100 hover:bg-slate-200 transition-all">
-                    Limpiar Formulario
-                </button>
-                <button type="button" onclick="if(confirm('¿Cerrar sesión?')) window.close()" class="py-4 px-6 rounded-xl font-bold text-red-600 border-2 border-red-50 hover:bg-red-50 transition-all">
-                    Cerrar Sesión
-                </button>
-                <button type="submit" id="btnGuardar" class="py-4 px-6 rounded-xl font-bold text-white bg-blue-600 hover:bg-blue-700 shadow-xl shadow-blue-200 transition-all transform active:scale-95">
-                    Guardar Registro
-                </button>
-            </div>
-        </form>
+                <div class="space-y-6">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <label class="block text-sm font-bold text-slate-700 mb-2">Nombre del Proyecto *</label>
+                            <input type="text" id="nombreProyecto" required class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-bold text-slate-700 mb-2">Cédula del Responsable *</label>
+                            <input type="text" id="cedula" required placeholder="000-0000000-0" class="w-full bg-blue-50 border-2 border-blue-100 rounded-xl p-3 outline-none font-bold text-blue-800">
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <div>
+                            <label class="block text-sm font-bold text-slate-700 mb-2">Nombre Responsable</label>
+                            <input type="text" id="responsable" required class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-bold text-slate-700 mb-2">Teléfono</label>
+                            <input type="tel" id="telefono" required class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-bold text-slate-700 mb-2">Correo</label>
+                            <input type="email" id="email" required class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 outline-none">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 p-6 bg-blue-50/50 rounded-2xl border border-blue-100">
+                    <div>
+                        <label class="block text-sm font-bold text-blue-800 mb-2">Fecha Último Seguimiento *</label>
+                        <input type="date" id="fechaSeguimiento" required class="w-full bg-white border border-blue-200 rounded-xl p-3 outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-bold text-blue-800 mb-2">Prioridad</label>
+                        <div class="flex gap-2">
+                            <button type="button" onclick="setPriority('Baja')" class="priority-btn flex-1 py-2 rounded-lg border-2 border-slate-200 font-bold text-slate-500 bg-white text-xs">Baja</button>
+                            <button type="button" onclick="setPriority('Media')" class="priority-btn flex-1 py-2 rounded-lg border-2 border-slate-200 font-bold text-slate-500 bg-white text-xs">Media</button>
+                            <button type="button" onclick="setPriority('Alta')" class="priority-btn flex-1 py-2 rounded-lg border-2 border-slate-200 font-bold text-slate-500 bg-white text-xs">Alta</button>
+                        </div>
+                        <input type="hidden" id="prioridad" value="">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-bold text-slate-700 mb-2">Recomendaciones y Mejoras</label>
+                    <textarea id="recomendaciones" rows="3" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 outline-none"></textarea>
+                </div>
+
+                <div class="bg-slate-50 p-6 rounded-2xl border border-slate-100">
+                    <div class="flex justify-between items-center mb-4">
+                        <label class="font-bold text-slate-700">Estado de Avance</label>
+                        <span id="progresoValor" class="bg-slate-900 text-white px-4 py-1 rounded-full text-sm font-bold">0%</span>
+                    </div>
+                    <input type="range" id="progreso" min="0" max="100" value="0" class="w-full h-3 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-blue-600">
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 pt-4">
+                    <button type="button" onclick="limpiarFormulario()" class="py-4 px-6 rounded-xl font-bold text-slate-600 bg-slate-100 hover:bg-slate-200 transition-all">Limpiar</button>
+                    <button type="button" onclick="if(confirm('¿Salir?')) window.close()" class="py-4 px-6 rounded-xl font-bold text-red-600 border-2 border-red-50 hover:bg-red-50 transition-all">Salir</button>
+                    <button type="submit" id="btnGuardar" class="py-4 px-6 rounded-xl font-bold text-white bg-blue-600 hover:bg-blue-700 shadow-xl transition-all transform active:scale-95">Guardar Registro</button>
+                </div>
+            </form>
+        </div>
     </div>
 
     <script>
-        // Función para cambiar color de botones de prioridad
+        const scriptURL = 'TU_URL_DE_APPS_SCRIPT';
+
         function setPriority(level) {
             document.getElementById('prioridad').value = level;
             const buttons = document.querySelectorAll('.priority-btn');
-            
             buttons.forEach(btn => {
-                // Primero limpiamos todos los estilos activos
-                btn.classList.remove('active-high', 'active-medium', 'active-low');
-                // Devolvemos el estilo original de los no seleccionados
-                btn.classList.add('text-slate-500', 'bg-white', 'border-slate-200');
-                
-                if(btn.innerText === level) {
-                    btn.classList.remove('text-slate-500', 'bg-white', 'border-slate-200');
-                    btn.classList.add('active-' + level.toLowerCase());
-                }
+                btn.classList.remove('active-high', 'active-medium', 'active-low', 'text-white');
+                if(btn.innerText === level) btn.classList.add('active-' + level.toLowerCase(), 'text-white');
             });
         }
 
-        function limpiarFormulario() {
-            if(confirm('¿Desea limpiar el formulario?')) {
-                document.getElementById('innovationForm').reset();
-                document.getElementById('progresoValor').textContent = '0%';
-                const buttons = document.querySelectorAll('.priority-btn');
-                buttons.forEach(btn => btn.classList.remove('active-high', 'active-medium', 'active-low'));
+        // --- FUNCIÓN DE BÚSQUEDA PROFESIONAL ---
+        async function buscarPorCedula() {
+            const cedulaBusqueda = document.getElementById('busquedaCedula').value;
+            if (!cedulaBusqueda) return alert("Ingrese una cédula para buscar");
+
+            const status = document.getElementById('statusBusqueda');
+            status.classList.remove('hidden');
+            status.classList.add('flex');
+
+            try {
+                // Enviamos una petición GET con el parámetro buscarCedula
+                const response = await fetch(`${scriptURL}?buscarCedula=${cedulaBusqueda}`);
+                const data = await response.json();
+
+                if (data.status === 'success') {
+                    const r = data.data;
+                    // Llenamos el formulario con lo encontrado
+                    document.getElementById('regional').value = r.regional;
+                    document.getElementById('taller').value = r.taller;
+                    document.getElementById('nombreProyecto').value = r.nombre;
+                    document.getElementById('cedula').value = r.cedula;
+                    document.getElementById('responsable').value = r.responsable;
+                    document.getElementById('telefono').value = r.telefono;
+                    document.getElementById('email').value = r.email;
+                    document.getElementById('fechaSeguimiento').value = r.fechaSeguimiento;
+                    document.getElementById('recomendaciones').value = r.recomendaciones;
+                    document.getElementById('progreso').value = r.progreso.replace('%', '');
+                    document.getElementById('progresoValor').textContent = r.progreso;
+                    setPriority(r.prioridad);
+                    
+                    alert("✅ Registro encontrado y cargado.");
+                } else {
+                    alert("❌ No se encontró ningún registro con esa cédula.");
+                }
+            } catch (error) {
+                console.error(error);
+                alert("Error al conectar con la base de datos.");
+            } finally {
+                status.classList.add('hidden');
             }
         }
 
         const progreso = document.getElementById('progreso');
-        const valor = document.getElementById('progresoValor');
         progreso.addEventListener('input', (e) => {
-            valor.textContent = `${e.target.value}%`;
+            document.getElementById('progresoValor').textContent = `${e.target.value}%`;
         });
-
-        // RECUERDA: Pegar aquí tu URL de Google Apps Script
-        const scriptURL = 'TU_URL_DE_APPS_SCRIPT'; 
 
         document.getElementById('innovationForm').addEventListener('submit', function(e) {
             e.preventDefault();
-            
-            if(!document.getElementById('prioridad').value) {
-                alert('Por favor seleccione un nivel de prioridad');
-                return;
-            }
-
             const btn = document.getElementById('btnGuardar');
             btn.disabled = true;
             btn.innerText = 'Guardando...';
 
             const payload = {
+                action: 'insert',
                 regional: document.getElementById('regional').value,
                 taller: document.getElementById('taller').value,
                 nombre: document.getElementById('nombreProyecto').value,
+                cedula: document.getElementById('cedula').value,
                 responsable: document.getElementById('responsable').value,
                 telefono: document.getElementById('telefono').value,
                 email: document.getElementById('email').value,
                 fechaSeguimiento: document.getElementById('fechaSeguimiento').value,
                 prioridad: document.getElementById('prioridad').value,
                 recomendaciones: document.getElementById('recomendaciones').value,
-                progreso: document.getElementById('progreso').value,
-                kpi: document.getElementById('kpi').value
+                progreso: document.getElementById('progreso').value
             };
 
             fetch(scriptURL, { method: 'POST', body: JSON.stringify(payload) })
-                .then(res => {
-                    alert('✅ Proyecto registrado con éxito.');
+                .then(() => {
+                    alert('✅ Datos guardados correctamente.');
                     this.reset();
                     document.getElementById('progresoValor').textContent = '0%';
-                    const buttons = document.querySelectorAll('.priority-btn');
-                    buttons.forEach(btn => btn.classList.remove('active-high', 'active-medium', 'active-low'));
                 })
                 .catch(err => alert('Error: ' + err.message))
                 .finally(() => {
@@ -208,6 +235,11 @@
                     btn.innerText = 'Guardar Registro';
                 });
         });
+
+        function limpiarFormulario() {
+            document.getElementById('innovationForm').reset();
+            document.getElementById('progresoValor').textContent = '0%';
+        }
     </script>
 </body>
 </html>

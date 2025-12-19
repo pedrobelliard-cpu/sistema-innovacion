@@ -34,12 +34,13 @@
                     <label class="block text-sm font-bold text-slate-700 mb-2">Regional / Sede *</label>
                     <select id="regional" required class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 focus:ring-2 focus:ring-blue-500 transition-all outline-none">
                         <option value="">Seleccione Regional...</option>
-                        <option value="Cibao Norte">Regional Cibao Norte</option>
-                        <option value="Cibao Sur">Regional Cibao Sur</option>
+                        <option value="Cibao Norte">Cibao Norte</option>
+                        <option value="Cibao Sur">Cibao Sur</option>
+                        <option value="Oriental">Oriental</option>
+                        <option value="Metropolitana">Metropolitana</option>
+                        <option value="Norte">Regional Norte</option>
                         <option value="Sur">Regional Sur</option>
                         <option value="Este">Regional Este</option>
-                        <option value="Oriental">Regional Oriental</option>
-                        <option value="Metropolitana">Regional Metropolitana</option>
                     </select>
                 </div>
                 <div>
@@ -124,19 +125,17 @@
     </div>
 
     <script>
-        // Manejo de Prioridad
         function setPriority(level) {
             document.getElementById('prioridad').value = level;
             const buttons = document.querySelectorAll('.priority-btn');
             buttons.forEach(btn => {
                 btn.classList.remove('active-high', 'active-medium', 'active-low', 'text-white');
                 if(btn.innerText === level) {
-                    btn.classList.add('active-' + level.toLowerCase());
+                    btn.classList.add('active-' + level.toLowerCase(), 'text-white');
                 }
             });
         }
 
-        // Slider dinámico
         const progreso = document.getElementById('progreso');
         const valor = document.getElementById('progresoValor');
         progreso.addEventListener('input', (e) => {
@@ -146,8 +145,8 @@
             else valor.className = "bg-slate-600 text-white px-3 py-1 rounded-full text-sm font-bold shadow-lg";
         });
 
-        // Envío de Datos (Conectar con Google Sheets)
-        const scriptURL = 'PEGA_AQUI_TU_NUEVA_URL_DE_APPS_SCRIPT'; 
+        // RECUERDA: Pegar aquí tu URL de Google Apps Script
+        const scriptURL = 'TU_NUEVA_URL_DE_APPS_SCRIPT'; 
 
         document.getElementById('innovationForm').addEventListener('submit', function(e) {
             e.preventDefault();
@@ -169,7 +168,7 @@
 
             fetch(scriptURL, { method: 'POST', body: JSON.stringify(payload) })
                 .then(res => {
-                    alert('🚀 Proyecto guardado con éxito en la nube.');
+                    alert('🚀 Registro actualizado correctamente.');
                     this.reset();
                     valor.textContent = '0%';
                 })

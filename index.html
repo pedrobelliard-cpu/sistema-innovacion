@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registro de Innovación | Corporativo</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .glass-effect { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); }
+    </style>
+</head>
+<body class="bg-slate-50 min-h-screen flex items-center justify-center p-4">
+
+    <div class="max-w-2xl w-full bg-white rounded-2xl shadow-xl overflow-hidden border border-slate-200 glass-effect">
+        
+        <div class="bg-indigo-700 p-6">
+            <h2 class="text-white text-2xl font-bold">Gestión de Proyectos de Innovación</h2>
+            <p class="text-indigo-100 text-sm">Registre y actualice el progreso de las iniciativas regionales.</p>
+        </div>
+
+        <form id="innovationForm" class="p-8 space-y-6">
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="flex flex-col">
+                    <label for="regional" class="text-sm font-semibold text-slate-700 mb-1">Regional *</label>
+                    <select id="regional" required class="border border-slate-300 rounded-lg p-2.5 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all">
+                        <option value="">Seleccione una regional...</option>
+                        <option value="norte">Regional Norte</option>
+                        <option value="sur">Regional Sur</option>
+                        <option value="este">Regional Este</option>
+                        <option value="oeste">Regional Oeste</option>
+                        <option value="central">Sede Central</option>
+                    </select>
+                </div>
+
+                <div class="flex flex-col">
+                    <label for="responsable" class="text-sm font-semibold text-slate-700 mb-1">Responsable del Proyecto *</label>
+                    <input type="text" id="responsable" placeholder="Nombre del líder" required
+                        class="border border-slate-300 rounded-lg p-2.5 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all">
+                </div>
+            </div>
+
+            <div class="flex flex-col">
+                <label for="nombreProyecto" class="text-sm font-semibold text-slate-700 mb-1">Nombre del Proyecto *</label>
+                <input type="text" id="nombreProyecto" placeholder="Ej: Optimización de procesos IA" required
+                    class="border border-slate-300 rounded-lg p-2.5 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all">
+            </div>
+
+            <div class="flex flex-col">
+                <div class="flex justify-between mb-1">
+                    <label for="progreso" class="text-sm font-semibold text-slate-700">Progreso del Proyecto</label>
+                    <span id="progresoValor" class="text-sm font-bold text-indigo-600 bg-indigo-50 px-2 py-1 rounded">0%</span>
+                </div>
+                <input type="range" id="progreso" min="0" max="100" value="0" 
+                    class="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-indigo-600">
+            </div>
+
+            <div class="flex flex-col">
+                <label for="kpi" class="text-sm font-semibold text-slate-700 mb-1">KPI del Proyecto (Métricas clave) *</label>
+                <textarea id="kpi" rows="3" placeholder="Describa los indicadores de éxito..." required
+                    class="border border-slate-300 rounded-lg p-2.5 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all"></textarea>
+            </div>
+
+            <div class="flex items-center justify-end space-x-4 pt-4 border-t border-slate-100">
+                <button type="button" id="btnSalir" 
+                    class="px-6 py-2.5 rounded-lg text-slate-600 font-medium hover:bg-slate-100 transition-colors border border-slate-200">
+                    Salir
+                </button>
+                <button type="submit" 
+                    class="px-8 py-2.5 rounded-lg bg-emerald-600 text-white font-bold shadow-lg hover:bg-emerald-700 hover:shadow-emerald-200/50 transition-all transform active:scale-95">
+                    Guardar Proyecto
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        // Actualizar el valor visual del progreso en tiempo real
+        const progresoInput = document.getElementById('progreso');
+        const progresoValor = document.getElementById('progresoValor');
+
+        progresoInput.addEventListener('input', (e) => {
+            progresoValor.textContent = `${e.target.value}%`;
+        });
+
+        // Lógica del botón Salir
+        document.getElementById('btnSalir').addEventListener('click', () => {
+            if (confirm('¿Está seguro de que desea salir? Los cambios no guardados se perderán.')) {
+                // Aquí podrías redirigir a otra página, ej: window.location.href = 'dashboard.html';
+                alert('Saliendo del sistema...');
+            }
+        });
+
+        // Validación y envío del formulario
+        document.getElementById('innovationForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+
+            // Simulación de guardado exitoso
+            const formData = {
+                regional: document.getElementById('regional').value,
+                responsable: document.getElementById('responsable').value,
+                nombre: document.getElementById('nombreProyecto').value,
+                progreso: document.getElementById('progreso').value,
+                kpi: document.getElementById('kpi').value
+            };
+
+            console.log('Datos guardados:', formData);
+            
+            // Feedback al usuario
+            alert('✅ Proyecto guardado exitosamente en el sistema de innovación.');
+            
+            // Opcional: Reiniciar formulario
+            // e.target.reset();
+            // progresoValor.textContent = '0%';
+        });
+    </script>
+</body>
+</html>

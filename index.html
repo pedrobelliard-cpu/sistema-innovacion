@@ -79,7 +79,7 @@
                 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
-                        <label class="block text-sm font-bold text-slate-700 mb-2">Regional / Sede *</label>
+                        <label for="regional" class="block text-sm font-bold text-slate-700 mb-2">Regional / Sede *</label>
                         <select id="regional" required class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 outline-none">
                             <option value="">Seleccione...</option>
                             <option value="Cibao Norte">Cibao Norte</option>
@@ -92,7 +92,7 @@
                         </select>
                     </div>
                     <div>
-                        <label class="block text-sm font-bold text-slate-700 mb-2">Taller Responsable *</label>
+                        <label for="taller" class="block text-sm font-bold text-slate-700 mb-2">Taller Responsable *</label>
                         <select id="taller" required class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 outline-none">
                             <option value="">Seleccione Taller...</option>
                             <option value="Electrónica">Electrónica</option>
@@ -111,26 +111,26 @@
                 <div class="space-y-6">
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div>
-                            <label class="block text-sm font-bold text-slate-700 mb-2">Nombre del Proyecto *</label>
+                            <label for="nombreProyecto" class="block text-sm font-bold text-slate-700 mb-2">Nombre del Proyecto *</label>
                             <input type="text" id="nombreProyecto" required class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 outline-none">
                         </div>
                         <div>
-                            <label class="block text-sm font-bold text-slate-700 mb-2">Cédula del Responsable *</label>
+                            <label for="cedula" class="block text-sm font-bold text-slate-700 mb-2">Cédula del Responsable *</label>
                             <input type="text" id="cedula" required placeholder="000-0000000-0" class="w-full bg-blue-50 border-2 border-blue-100 rounded-xl p-3 outline-none font-bold text-blue-800">
                         </div>
                     </div>
 
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                         <div>
-                            <label class="block text-sm font-bold text-slate-700 mb-2">Nombre Responsable</label>
+                            <label for="responsable" class="block text-sm font-bold text-slate-700 mb-2">Nombre Responsable</label>
                             <input type="text" id="responsable" required class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 outline-none">
                         </div>
                         <div>
-                            <label class="block text-sm font-bold text-slate-700 mb-2">Teléfono</label>
+                            <label for="telefono" class="block text-sm font-bold text-slate-700 mb-2">Teléfono</label>
                             <input type="tel" id="telefono" required class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 outline-none">
                         </div>
                         <div>
-                            <label class="block text-sm font-bold text-slate-700 mb-2">Correo</label>
+                            <label for="email" class="block text-sm font-bold text-slate-700 mb-2">Correo</label>
                             <input type="email" id="email" required class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 outline-none">
                         </div>
                     </div>
@@ -138,7 +138,7 @@
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6 p-6 bg-blue-50/50 rounded-2xl border border-blue-100">
                     <div>
-                        <label class="block text-sm font-bold text-blue-800 mb-2">Fecha Último Seguimiento *</label>
+                        <label for="fechaSeguimiento" class="block text-sm font-bold text-blue-800 mb-2">Fecha Último Seguimiento *</label>
                         <input type="date" id="fechaSeguimiento" required class="w-full bg-white border border-blue-200 rounded-xl p-3 outline-none">
                     </div>
                     <div>
@@ -153,7 +153,7 @@
                 </div>
 
                 <div>
-                    <label class="block text-sm font-bold text-slate-700 mb-2">Recomendaciones y Mejoras</label>
+                    <label for="recomendaciones" class="block text-sm font-bold text-slate-700 mb-2">Recomendaciones y Mejoras</label>
                     <textarea id="recomendaciones" rows="3" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 outline-none"></textarea>
                 </div>
 
@@ -256,16 +256,17 @@
 
             try {
                 // Intentamos obtener todos los registros.
-                // Si el backend no soporta 'readAll', esto fallará o devolverá vacío.
                 const response = await fetch(`${scriptURL}?action=readAll`);
+                if (!response.ok) throw new Error('Network response was not ok');
+
                 const data = await response.json();
 
-                if (data.status === 'success' && Array.isArray(data.data)) {
+                if (data && data.status === 'success' && Array.isArray(data.data)) {
                     renderDashboard(data.data);
+                } else if (Array.isArray(data)) {
+                    renderDashboard(data);
                 } else {
-                    document.getElementById('api-alert').classList.remove('hidden');
-                    // Renderizar con datos vacíos o de ejemplo para mostrar la estructura
-                    renderDashboard([]);
+                    throw new Error('Formato no reconocido');
                 }
             } catch (error) {
                 console.error("Error al cargar dashboard:", error);
@@ -407,6 +408,24 @@
             searchResults.scrollIntoView({ behavior: 'smooth' });
         }
 
+        function formatDateForInput(dateStr) {
+            if (!dateStr) return '';
+            try {
+                // Manejar formatos DD/MM/YYYY o ISO
+                if (dateStr.includes('/')) {
+                    const parts = dateStr.split('/');
+                    if (parts.length === 3) {
+                        return `${parts[2]}-${parts[1].padStart(2, '0')}-${parts[0].padStart(2, '0')}`;
+                    }
+                }
+                const d = new Date(dateStr);
+                if (isNaN(d.getTime())) return dateStr;
+                return d.toISOString().split('T')[0];
+            } catch (e) {
+                return dateStr;
+            }
+        }
+
         function cargarProyecto(p) {
             document.getElementById('regional').value = p.regional || '';
             document.getElementById('taller').value = p.taller || '';
@@ -415,7 +434,10 @@
             document.getElementById('responsable').value = p.responsable || '';
             document.getElementById('telefono').value = p.telefono || '';
             document.getElementById('email').value = p.email || '';
-            document.getElementById('fechaSeguimiento').value = p.fechaSeguimiento || '';
+
+            const fecha = p.fechaSeguimiento || p.fecha || '';
+            document.getElementById('fechaSeguimiento').value = formatDateForInput(fecha);
+
             document.getElementById('recomendaciones').value = p.recomendaciones || '';
 
             const prog = (p.progreso || "0").toString().replace('%', '');
@@ -424,6 +446,9 @@
 
             setPriority(p.prioridad || '');
             document.getElementById('search-results').classList.add('hidden');
+
+            // Scroll al formulario
+            document.getElementById('innovationForm').scrollIntoView({ behavior: 'smooth' });
         }
 
         const progreso = document.getElementById('progreso');
@@ -439,11 +464,11 @@
             const cedula = document.getElementById('cedula').value;
             const telefono = document.getElementById('telefono').value;
 
-            if (!/^\d{3}-\d{7}-\d{1}$/.test(cedula)) {
-                return showToast("Cédula inválida. Use el formato 000-0000000-0", "error");
+            if (cedula && !/^\d{3}-?\d{7}-?\d{1}$/.test(cedula)) {
+                return showToast("Cédula inválida. Formato sugerido: 000-0000000-0", "error");
             }
-            if (!/^\d{3}-\d{3}-\d{4}$/.test(telefono) && !/^\d{10}$/.test(telefono)) {
-                return showToast("Teléfono inválido. Use 809-000-0000 o 10 dígitos", "error");
+            if (telefono && !/^\d{3}-?\d{3}-?\d{4}$/.test(telefono) && !/^\d{10}$/.test(telefono)) {
+                return showToast("Teléfono inválido. Use 10 dígitos", "error");
             }
             if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
                 return showToast("Correo electrónico inválido", "error");
@@ -451,37 +476,35 @@
 
             toggleLoader(true);
 
-            const payload = {
-                action: 'insert',
-                regional: document.getElementById('regional').value,
-                taller: document.getElementById('taller').value,
-                nombre: document.getElementById('nombreProyecto').value,
-                cedula: document.getElementById('cedula').value,
-                responsable: document.getElementById('responsable').value,
-                telefono: document.getElementById('telefono').value,
-                email: document.getElementById('email').value,
-                fechaSeguimiento: document.getElementById('fechaSeguimiento').value,
-                prioridad: document.getElementById('prioridad').value,
-                recomendaciones: document.getElementById('recomendaciones').value,
-                progreso: document.getElementById('progreso').value
-            };
+            const formData = new FormData();
+            formData.append('action', 'insert');
+            formData.append('regional', document.getElementById('regional').value);
+            formData.append('taller', document.getElementById('taller').value);
+            formData.append('nombre', document.getElementById('nombreProyecto').value);
+            formData.append('cedula', document.getElementById('cedula').value);
+            formData.append('responsable', document.getElementById('responsable').value);
+            formData.append('telefono', document.getElementById('telefono').value);
+            formData.append('email', document.getElementById('email').value);
+            formData.append('fechaSeguimiento', document.getElementById('fechaSeguimiento').value);
+            formData.append('prioridad', document.getElementById('prioridad').value);
+            formData.append('recomendaciones', document.getElementById('recomendaciones').value);
+            formData.append('progreso', document.getElementById('progreso').value);
 
-            fetch(scriptURL, { method: 'POST', body: JSON.stringify(payload) })
-                .then(async (response) => {
-                    const data = await response.json();
-                    if (data.status === 'success') {
-                        showToast('✅ Datos guardados correctamente.');
-                        this.reset();
-                        document.getElementById('progresoValor').textContent = '0%';
-                        setPriority('');
-                    } else {
-                        throw new Error(data.message || 'Error al guardar');
-                    }
-                })
-                .catch(err => showToast('Error: ' + err.message, 'error'))
-                .finally(() => {
-                    toggleLoader(false);
-                });
+            fetch(scriptURL, {
+                method: 'POST',
+                mode: 'no-cors',
+                body: formData
+            })
+            .then(() => {
+                showToast('✅ Datos guardados correctamente.');
+                this.reset();
+                document.getElementById('progresoValor').textContent = '0%';
+                setPriority('');
+            })
+            .catch(err => showToast('Error al conectar: ' + err.message, 'error'))
+            .finally(() => {
+                toggleLoader(false);
+            });
         });
 
         function limpiarFormulario() {

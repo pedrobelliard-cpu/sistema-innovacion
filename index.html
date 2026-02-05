@@ -439,8 +439,8 @@
             const cedula = document.getElementById('cedula').value;
             const telefono = document.getElementById('telefono').value;
 
-            if (!/^\d{3}-\d{7}-\d{1}$/.test(cedula)) {
-                return showToast("Cédula inválida. Use el formato 000-0000000-0", "error");
+            if (!/^\d{3}-?\d{7}-?\d{1}$/.test(cedula)) {
+                return showToast("Cédula inválida. Use el formato 000-0000000-0 o 11 dígitos", "error");
             }
             if (!/^\d{3}-\d{3}-\d{4}$/.test(telefono) && !/^\d{10}$/.test(telefono)) {
                 return showToast("Teléfono inválido. Use 809-000-0000 o 10 dígitos", "error");
@@ -451,34 +451,32 @@
 
             toggleLoader(true);
 
-            const payload = {
-                action: 'insert',
-                regional: document.getElementById('regional').value,
-                taller: document.getElementById('taller').value,
-                nombre: document.getElementById('nombreProyecto').value,
-                cedula: document.getElementById('cedula').value,
-                responsable: document.getElementById('responsable').value,
-                telefono: document.getElementById('telefono').value,
-                email: document.getElementById('email').value,
-                fechaSeguimiento: document.getElementById('fechaSeguimiento').value,
-                prioridad: document.getElementById('prioridad').value,
-                recomendaciones: document.getElementById('recomendaciones').value,
-                progreso: document.getElementById('progreso').value
-            };
+            const formData = new FormData();
+            formData.append('action', 'insert');
+            formData.append('regional', document.getElementById('regional').value);
+            formData.append('taller', document.getElementById('taller').value);
+            formData.append('nombre', document.getElementById('nombreProyecto').value);
+            formData.append('cedula', document.getElementById('cedula').value);
+            formData.append('responsable', document.getElementById('responsable').value);
+            formData.append('telefono', document.getElementById('telefono').value);
+            formData.append('email', document.getElementById('email').value);
+            formData.append('fechaSeguimiento', document.getElementById('fechaSeguimiento').value);
+            formData.append('prioridad', document.getElementById('prioridad').value);
+            formData.append('recomendaciones', document.getElementById('recomendaciones').value);
+            formData.append('progreso', document.getElementById('progreso').value);
 
-            fetch(scriptURL, { method: 'POST', body: JSON.stringify(payload) })
-                .then(async (response) => {
-                    const data = await response.json();
-                    if (data.status === 'success') {
-                        showToast('✅ Datos guardados correctamente.');
-                        this.reset();
-                        document.getElementById('progresoValor').textContent = '0%';
-                        setPriority('');
-                    } else {
-                        throw new Error(data.message || 'Error al guardar');
-                    }
-                })
-                .catch(err => showToast('Error: ' + err.message, 'error'))
+            fetch(scriptURL, {
+                method: 'POST',
+                body: formData,
+                mode: 'no-cors'
+            })
+            .then(() => {
+                showToast('✅ Registro enviado satisfactoriamente.');
+                this.reset();
+                document.getElementById('progresoValor').textContent = '0%';
+                setPriority('');
+            })
+            .catch(err => showToast('Error al enviar: ' + err.message, 'error'))
                 .finally(() => {
                     toggleLoader(false);
                 });

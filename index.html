@@ -260,25 +260,35 @@
 
             const parseRecords = (data) => {
                 if (!data) return null;
+                console.log("Parsing records from data:", data);
+
+                // Si data es un string (posiblemente JSON mal parseado por el navegador)
+                if (typeof data === 'string') {
+                    try { data = JSON.parse(data); } catch(e) {}
+                }
 
                 // Formato estándar {status: 'success', data: [...]}
-                if (data.status === 'success') {
+                if (data.status === 'success' || data.status === 'ok') {
                     if (Array.isArray(data.data)) return data.data;
                     if (data.data && typeof data.data === 'object') {
-                        // Maneja el caso de objeto-de-objetos (común en GAS)
                         const values = Object.values(data.data);
                         const isObjectOfObjects = values.length > 0 && values.every(v => v && typeof v === 'object');
                         return isObjectOfObjects ? values : [data.data];
                     }
+                    if (Array.isArray(data.records)) return data.records;
                     return [];
                 }
 
                 // Otros formatos comunes
                 if (Array.isArray(data)) return data;
 
-                const potentialKeys = ['data', 'records', 'proyectos', 'items'];
+                const potentialKeys = ['data', 'records', 'proyectos', 'items', 'registros'];
                 for (const key of potentialKeys) {
                     if (data[key] && Array.isArray(data[key])) return data[key];
+                    if (data[key] && typeof data[key] === 'object') {
+                        const vals = Object.values(data[key]);
+                        if (vals.length > 0 && vals.every(v => v && typeof v === 'object')) return vals;
+                    }
                 }
 
                 // Manejo de objeto-de-objetos sin propiedad status
@@ -294,34 +304,43 @@
 
             try {
                 let records = null;
+
+                // Intento 1: POST con action: 'readAll'
                 try {
+                    console.log("Intentando obtener datos (POST readAll)...");
                     const response = await fetch(scriptURL, {
                         method: 'POST',
                         body: JSON.stringify({ action: 'readAll' })
                     });
                     const data = await response.json();
-                    console.log("Dashboard: Datos recibidos (readAll)", data);
                     records = parseRecords(data);
-                } catch (e) {
-                    console.warn("Dashboard: Falló readAll, intentando fallback", e);
-                }
+                } catch (e) { console.warn("Fallo POST readAll", e); }
 
-                // Fallback si readAll falló o no devolvió datos válidos
-                if (records === null) {
+                // Intento 2: POST con buscarCedula vacía (algunos backends devuelven todo)
+                if (!records) {
                     try {
+                        console.log("Intentando obtener datos (POST fallback buscarCedula)...");
                         const response = await fetch(scriptURL, {
                             method: 'POST',
                             body: JSON.stringify({ buscarCedula: '' })
                         });
                         const data = await response.json();
-                        console.log("Dashboard: Datos recibidos (fallback)", data);
                         records = parseRecords(data);
-                    } catch (e) {
-                        console.error("Dashboard: Fallback también falló", e);
-                    }
+                    } catch (e) { console.warn("Fallo POST fallback", e); }
                 }
 
-                if (records !== null) {
+                // Intento 3: GET con action=readAll (redundancia)
+                if (!records) {
+                    try {
+                        console.log("Intentando obtener datos (GET readAll)...");
+                        const response = await fetch(scriptURL + '?action=readAll');
+                        const data = await response.json();
+                        records = parseRecords(data);
+                    } catch (e) { console.warn("Fallo GET readAll", e); }
+                }
+
+                if (records) {
+                    console.log(`Se obtuvieron ${records.length} registros exitosamente.`);
                     renderDashboard(records);
                 } else {
                     console.error("Dashboard: No se pudo obtener ningún registro.");
@@ -410,14 +429,16 @@
         }
 
         function setPriority(level) {
-            const mapping = { 'Baja': 'low', 'Media': 'medium', 'Alta': 'high' };
-            const activeClass = mapping[level] || level.toLowerCase();
+            if (!level) return;
+            const mapping = { 'baja': 'low', 'media': 'medium', 'alta': 'high' };
+            const normalizedLevel = level.toLowerCase();
+            const activeClass = mapping[normalizedLevel] || normalizedLevel;
 
             document.getElementById('prioridad').value = level;
             const buttons = document.querySelectorAll('.priority-btn');
             buttons.forEach(btn => {
                 btn.classList.remove('active-high', 'active-medium', 'active-low', 'text-white', 'bg-white');
-                if(btn.innerText === level) {
+                if(btn.innerText.toLowerCase() === normalizedLevel) {
                     btn.classList.add('active-' + activeClass, 'text-white');
                 } else {
                     btn.classList.add('bg-white');
@@ -427,7 +448,7 @@
 
         // --- FUNCIÓN DE BÚSQUEDA PROFESIONAL ---
         async function buscarPorCedula() {
-            const cedulaBusqueda = document.getElementById('busquedaCedula').value;
+            const cedulaBusqueda = document.getElementById('busquedaCedula').value.trim();
             if (!cedulaBusqueda) return showToast("Ingrese una cédula para buscar", "error");
 
             toggleLoader(true);
@@ -435,26 +456,37 @@
             searchResults.classList.add('hidden');
 
             try {
+                console.log("Buscando cédula:", cedulaBusqueda);
                 const response = await fetch(scriptURL, {
                     method: 'POST',
-                    body: JSON.stringify({ buscarCedula: cedulaBusqueda })
+                    body: JSON.stringify({ action: 'search', buscarCedula: cedulaBusqueda })
                 });
                 const data = await response.json();
+                console.log("Resultado búsqueda:", data);
 
-                if (data.status === 'success') {
-                    const results = Array.isArray(data.data) ? data.data : [data.data];
+                const records = (data.status === 'success' || data.status === 'ok') ?
+                    (Array.isArray(data.data) ? data.data : (data.data ? [data.data] : [])) : [];
+
+                if (records.length === 0 || (records.length === 1 && !records[0].nombre && !records[0].nombreProyecto)) {
+                    // Intento fallback si el primer intento no devolvió nada
+                    const fallbackResponse = await fetch(scriptURL + '?buscarCedula=' + encodeURIComponent(cedulaBusqueda));
+                    const fallbackData = await fallbackResponse.json();
+                    const fallbackRecords = (fallbackData.status === 'success') ?
+                        (Array.isArray(fallbackData.data) ? fallbackData.data : [fallbackData.data]) : [];
                     
-                    if (results.length === 0 || (results.length === 1 && !results[0].nombre)) {
-                        showToast("❌ No se encontró ningún registro con esa cédula.", "error");
-                    } else if (results.length === 1) {
-                        cargarProyecto(results[0]);
-                        showToast("✅ Registro encontrado y cargado.");
+                    if (fallbackRecords.length > 0) {
+                        if (fallbackRecords.length === 1) cargarProyecto(fallbackRecords[0]);
+                        else mostrarListaProyectos(fallbackRecords);
+                        showToast("✅ Registro encontrado.");
                     } else {
-                        mostrarListaProyectos(results);
-                        showToast(`✅ se encontraron ${results.length} proyectos.`);
+                        showToast("❌ No se encontró ningún registro con esa cédula.", "error");
                     }
+                } else if (records.length === 1) {
+                    cargarProyecto(records[0]);
+                    showToast("✅ Registro encontrado.");
                 } else {
-                    showToast("❌ No se encontró ningún registro con esa cédula.", "error");
+                    mostrarListaProyectos(records);
+                    showToast(`✅ Se encontraron ${records.length} proyectos.`);
                 }
             } catch (error) {
                 console.error(error);
@@ -491,9 +523,10 @@
         }
 
         function cargarProyecto(p) {
+            console.log("Cargando proyecto:", p);
             document.getElementById('regional').value = p.regional || '';
             document.getElementById('taller').value = p.taller || '';
-            document.getElementById('nombreProyecto').value = p.nombre || '';
+            document.getElementById('nombreProyecto').value = p.nombre || p.nombreProyecto || '';
             document.getElementById('cedula').value = p.cedula || '';
             document.getElementById('responsable').value = p.responsable || '';
             document.getElementById('telefono').value = p.telefono || '';
@@ -539,6 +572,7 @@
                 regional: document.getElementById('regional').value,
                 taller: document.getElementById('taller').value,
                 nombre: document.getElementById('nombreProyecto').value,
+                nombreProyecto: document.getElementById('nombreProyecto').value, // Duplicado por compatibilidad
                 cedula: document.getElementById('cedula').value,
                 responsable: document.getElementById('responsable').value,
                 telefono: document.getElementById('telefono').value,
@@ -549,7 +583,8 @@
                 progreso: document.getElementById('progreso').value
             };
 
-            fetch(scriptURL, {
+            console.log("Enviando registro:", payload);
+            fetch(scriptURL + '?action=insert', {
                 method: 'POST',
                 body: JSON.stringify(payload),
                 mode: 'no-cors'

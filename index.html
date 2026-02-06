@@ -34,144 +34,143 @@
     <main class="max-w-6xl mx-auto p-4 md:p-8 space-y-6">
         
         <div id="registro-view" class="space-y-6 animate-fade-in">
-        <div class="bg-white p-4 rounded-2xl shadow-lg border border-blue-100 flex flex-col md:flex-row gap-4 items-center">
-            <div class="flex-1 w-full">
-                <label for="busquedaCedula" class="text-xs font-bold text-slate-500 uppercase ml-2">Consultar Registro por Cédula</label>
-                <div class="relative">
-                    <input type="text" id="busquedaCedula" placeholder="000-0000000-0" 
-                        class="w-full pl-4 pr-12 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none font-mono">
-                    <button onclick="buscarPorCedula()" class="absolute right-2 top-2 p-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-all">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
-                    </button>
-                </div>
-            </div>
-            <div id="statusBusqueda" class="hidden items-center text-sm text-blue-600 font-medium">
-                <div class="loader w-4 h-4 border-2 rounded-full mr-2"></div> Buscando...
-            </div>
-        </div>
-
-        <div id="search-results" class="hidden bg-white p-6 rounded-2xl shadow-lg border border-blue-100">
-            <h3 class="text-lg font-bold text-slate-800 mb-4">Resultados de búsqueda</h3>
-            <div class="overflow-x-auto">
-                <table class="w-full text-left">
-                    <thead>
-                        <tr class="text-xs font-bold text-slate-400 uppercase border-b">
-                            <th class="pb-3">Proyecto</th>
-                            <th class="pb-3">Responsable</th>
-                            <th class="pb-3">Regional</th>
-                            <th class="pb-3 text-right">Acción</th>
-                        </tr>
-                    </thead>
-                    <tbody id="results-table-body"></tbody>
-                </table>
-            </div>
-        </div>
-
-        <div class="bg-white rounded-3xl shadow-2xl overflow-hidden border border-white/20 glass">
-            <div class="bg-slate-900 p-8 text-white relative">
-                <div class="relative z-10">
-                    <h1 class="text-3xl font-extrabold tracking-tight">Registro de proyecto de innovación</h1>
-                    <p class="text-slate-400 mt-2 font-medium">Seguimiento Centralizado por Regionales</p>
-                </div>
-            </div>
-
-            <form id="innovationForm" class="p-8 space-y-8">
-                
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div>
-                        <label class="block text-sm font-bold text-slate-700 mb-2">Regional / Sede *</label>
-                        <select id="regional" required class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 outline-none">
-                            <option value="">Seleccione...</option>
-                            <option value="Cibao Norte">Cibao Norte</option>
-                            <option value="Cibao Sur">Cibao Sur</option>
-                            <option value="Oriental">Oriental</option>
-                            <option value="Metropolitana">Metropolitana</option>
-                            <option value="Norte">Regional Norte</option>
-                            <option value="Sur">Regional Sur</option>
-                            <option value="Este">Regional Este</option>
-                        </select>
+            <div class="bg-white p-4 rounded-2xl shadow-lg border border-blue-100 flex flex-col md:flex-row gap-4 items-center">
+                <div class="flex-1 w-full">
+                    <label for="busquedaCedula" class="text-xs font-bold text-slate-500 uppercase ml-2">Consultar Registro por Cédula</label>
+                    <div class="relative">
+                        <input type="text" id="busquedaCedula" placeholder="000-0000000-0" 
+                            class="w-full pl-4 pr-12 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none font-mono">
+                        <button onclick="buscarPorCedula()" class="absolute right-2 top-2 p-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-all">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                        </button>
                     </div>
-                    <div>
-                        <label class="block text-sm font-bold text-slate-700 mb-2">Taller Responsable *</label>
-                        <select id="taller" required class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 outline-none">
-                            <option value="">Seleccione Taller...</option>
-                            <option value="Electrónica">Electrónica</option>
-                            <option value="Informática">Informática</option>
-                            <option value="Mecánica">Mecánica</option>
-                            <option value="Mecánica Industrial">Mecánica Industrial</option>
-                            <option value="Gastronomía y Hotelería">Gastronomía y Hotelería</option>
-                            <option value="Ebanistería">Ebanistería</option>
-                            <option value="Masaje">Masaje</option>
-                            <option value="Artes Gráficas">Artes Gráficas</option>
-                            <option value="Electricidad">Electricidad</option>
-                        </select>
+                </div>
+                <div id="statusBusqueda" class="hidden items-center text-sm text-blue-600 font-medium">
+                    <div class="loader w-4 h-4 border-2 rounded-full mr-2"></div> Buscando...
+                </div>
+            </div>
+
+            <div id="search-results" class="hidden bg-white p-6 rounded-2xl shadow-lg border border-blue-100">
+                <h3 class="text-lg font-bold text-slate-800 mb-4">Resultados de búsqueda</h3>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left">
+                        <thead>
+                            <tr class="text-xs font-bold text-slate-400 uppercase border-b">
+                                <th class="pb-3">Proyecto</th>
+                                <th class="pb-3">Responsable</th>
+                                <th class="pb-3">Regional</th>
+                                <th class="pb-3 text-right">Acción</th>
+                            </tr>
+                        </thead>
+                        <tbody id="results-table-body"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-3xl shadow-2xl overflow-hidden border border-white/20 glass">
+                <div class="bg-slate-900 p-8 text-white relative">
+                    <div class="relative z-10">
+                        <h1 class="text-3xl font-extrabold tracking-tight">Registro de proyecto de innovación</h1>
+                        <p class="text-slate-400 mt-2 font-medium">Seguimiento Centralizado por Regionales</p>
                     </div>
                 </div>
 
-                <div class="space-y-6">
+                <form id="innovationForm" class="p-8 space-y-8">
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div>
-                            <label class="block text-sm font-bold text-slate-700 mb-2">Nombre del Proyecto *</label>
-                            <input type="text" id="nombreProyecto" required class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 outline-none">
+                            <label class="block text-sm font-bold text-slate-700 mb-2">Regional / Sede *</label>
+                            <select id="regional" required class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 outline-none">
+                                <option value="">Seleccione...</option>
+                                <option value="Cibao Norte">Cibao Norte</option>
+                                <option value="Cibao Sur">Cibao Sur</option>
+                                <option value="Oriental">Oriental</option>
+                                <option value="Metropolitana">Metropolitana</option>
+                                <option value="Norte">Regional Norte</option>
+                                <option value="Sur">Regional Sur</option>
+                                <option value="Este">Regional Este</option>
+                            </select>
                         </div>
                         <div>
-                            <label class="block text-sm font-bold text-slate-700 mb-2">Cédula del Responsable *</label>
-                            <input type="text" id="cedula" required placeholder="000-0000000-0" class="w-full bg-blue-50 border-2 border-blue-100 rounded-xl p-3 outline-none font-bold text-blue-800">
+                            <label class="block text-sm font-bold text-slate-700 mb-2">Taller Responsable *</label>
+                            <select id="taller" required class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 outline-none">
+                                <option value="">Seleccione Taller...</option>
+                                <option value="Electrónica">Electrónica</option>
+                                <option value="Informática">Informática</option>
+                                <option value="Mecánica">Mecánica</option>
+                                <option value="Mecánica Industrial">Mecánica Industrial</option>
+                                <option value="Gastronomía y Hotelería">Gastronomía y Hotelería</option>
+                                <option value="Ebanistería">Ebanistería</option>
+                                <option value="Masaje">Masaje</option>
+                                <option value="Artes Gráficas">Artes Gráficas</option>
+                                <option value="Electricidad">Electricidad</option>
+                            </select>
                         </div>
                     </div>
 
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                        <div>
-                            <label class="block text-sm font-bold text-slate-700 mb-2">Nombre Responsable</label>
-                            <input type="text" id="responsable" required class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 outline-none">
+                    <div class="space-y-6">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <label class="block text-sm font-bold text-slate-700 mb-2">Nombre del Proyecto *</label>
+                                <input type="text" id="nombreProyecto" required class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 outline-none">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-bold text-slate-700 mb-2">Cédula del Responsable *</label>
+                                <input type="text" id="cedula" required placeholder="000-0000000-0" class="w-full bg-blue-50 border-2 border-blue-100 rounded-xl p-3 outline-none font-bold text-blue-800">
+                            </div>
                         </div>
-                        <div>
-                            <label class="block text-sm font-bold text-slate-700 mb-2">Teléfono</label>
-                            <input type="tel" id="telefono" required class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 outline-none">
-                        </div>
-                        <div>
-                            <label class="block text-sm font-bold text-slate-700 mb-2">Correo</label>
-                            <input type="email" id="email" required class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 outline-none">
+
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                            <div>
+                                <label class="block text-sm font-bold text-slate-700 mb-2">Nombre Responsable</label>
+                                <input type="text" id="responsable" required class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 outline-none">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-bold text-slate-700 mb-2">Teléfono</label>
+                                <input type="tel" id="telefono" required class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 outline-none">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-bold text-slate-700 mb-2">Correo</label>
+                                <input type="email" id="email" required class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 outline-none">
+                            </div>
                         </div>
                     </div>
-                </div>
 
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 p-6 bg-blue-50/50 rounded-2xl border border-blue-100">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 p-6 bg-blue-50/50 rounded-2xl border border-blue-100">
+                        <div>
+                            <label class="block text-sm font-bold text-blue-800 mb-2">Fecha Último Seguimiento *</label>
+                            <input type="date" id="fechaSeguimiento" required class="w-full bg-white border border-blue-200 rounded-xl p-3 outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-bold text-blue-800 mb-2">Prioridad</label>
+                            <div class="flex gap-2">
+                                <button type="button" onclick="setPriority('Baja')" class="priority-btn flex-1 py-2 rounded-lg border-2 border-slate-200 font-bold text-slate-500 bg-white text-xs">Baja</button>
+                                <button type="button" onclick="setPriority('Media')" class="priority-btn flex-1 py-2 rounded-lg border-2 border-slate-200 font-bold text-slate-500 bg-white text-xs">Media</button>
+                                <button type="button" onclick="setPriority('Alta')" class="priority-btn flex-1 py-2 rounded-lg border-2 border-slate-200 font-bold text-slate-500 bg-white text-xs">Alta</button>
+                            </div>
+                            <input type="hidden" id="prioridad" value="">
+                        </div>
+                    </div>
+
                     <div>
-                        <label class="block text-sm font-bold text-blue-800 mb-2">Fecha Último Seguimiento *</label>
-                        <input type="date" id="fechaSeguimiento" required class="w-full bg-white border border-blue-200 rounded-xl p-3 outline-none">
+                        <label class="block text-sm font-bold text-slate-700 mb-2">Recomendaciones y Mejoras</label>
+                        <textarea id="recomendaciones" rows="3" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 outline-none"></textarea>
                     </div>
-                    <div>
-                        <label class="block text-sm font-bold text-blue-800 mb-2">Prioridad</label>
-                        <div class="flex gap-2">
-                            <button type="button" onclick="setPriority('Baja')" class="priority-btn flex-1 py-2 rounded-lg border-2 border-slate-200 font-bold text-slate-500 bg-white text-xs">Baja</button>
-                            <button type="button" onclick="setPriority('Media')" class="priority-btn flex-1 py-2 rounded-lg border-2 border-slate-200 font-bold text-slate-500 bg-white text-xs">Media</button>
-                            <button type="button" onclick="setPriority('Alta')" class="priority-btn flex-1 py-2 rounded-lg border-2 border-slate-200 font-bold text-slate-500 bg-white text-xs">Alta</button>
+
+                    <div class="bg-slate-50 p-6 rounded-2xl border border-slate-100">
+                        <div class="flex justify-between items-center mb-4">
+                            <label class="font-bold text-slate-700">Estado de Avance</label>
+                            <span id="progresoValor" class="bg-slate-900 text-white px-4 py-1 rounded-full text-sm font-bold">0%</span>
                         </div>
-                        <input type="hidden" id="prioridad" value="">
+                        <input type="range" id="progreso" min="0" max="100" value="0" class="w-full h-3 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-blue-600">
                     </div>
-                </div>
 
-                <div>
-                    <label class="block text-sm font-bold text-slate-700 mb-2">Recomendaciones y Mejoras</label>
-                    <textarea id="recomendaciones" rows="3" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 outline-none"></textarea>
-                </div>
-
-                <div class="bg-slate-50 p-6 rounded-2xl border border-slate-100">
-                    <div class="flex justify-between items-center mb-4">
-                        <label class="font-bold text-slate-700">Estado de Avance</label>
-                        <span id="progresoValor" class="bg-slate-900 text-white px-4 py-1 rounded-full text-sm font-bold">0%</span>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 pt-4">
+                        <button type="button" onclick="resetForm()" class="py-4 px-6 rounded-xl font-bold text-blue-600 bg-blue-50 hover:bg-blue-100 transition-all">Nuevo Registro</button>
+                        <button type="button" onclick="limpiarFormulario()" class="py-4 px-6 rounded-xl font-bold text-slate-600 bg-slate-100 hover:bg-slate-200 transition-all">Limpiar</button>
+                        <button type="submit" id="btnGuardar" class="py-4 px-6 rounded-xl font-bold text-white bg-blue-600 hover:bg-blue-700 shadow-xl transition-all transform active:scale-95">Guardar Registro</button>
                     </div>
-                    <input type="range" id="progreso" min="0" max="100" value="0" class="w-full h-3 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-blue-600">
-                </div>
-
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 pt-4">
-                    <button type="button" onclick="resetForm()" class="py-4 px-6 rounded-xl font-bold text-blue-600 bg-blue-50 hover:bg-blue-100 transition-all">Nuevo Registro</button>
-                    <button type="button" onclick="limpiarFormulario()" class="py-4 px-6 rounded-xl font-bold text-slate-600 bg-slate-100 hover:bg-slate-200 transition-all">Limpiar</button>
-                    <button type="submit" id="btnGuardar" class="py-4 px-6 rounded-xl font-bold text-white bg-blue-600 hover:bg-blue-700 shadow-xl transition-all transform active:scale-95">Guardar Registro</button>
-                </div>
-            </form>
-        </div>
+                </form>
+            </div>
         </div>
 
         <div id="dashboard-view" class="hidden space-y-6 animate-fade-in">
@@ -197,11 +196,15 @@
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div class="bg-white p-6 rounded-2xl shadow-lg border border-blue-100">
                     <h3 class="font-bold text-slate-800 mb-4">Proyectos por Regional</h3>
-                    <canvas id="chartRegionales" height="300"></canvas>
+                    <div class="h-[300px] w-full relative">
+                        <canvas id="chartRegionales"></canvas>
+                    </div>
                 </div>
                 <div class="bg-white p-6 rounded-2xl shadow-lg border border-blue-100">
                     <h3 class="font-bold text-slate-800 mb-4">Proyectos por Taller</h3>
-                    <canvas id="chartTalleres" height="300"></canvas>
+                    <div class="h-[300px] w-full relative">
+                        <canvas id="chartTalleres"></canvas>
+                    </div>
                 </div>
             </div>
 
@@ -250,22 +253,50 @@
             }
         }
 
+        // --- FUNCIÓN DASHBOARD OPTIMIZADA ---
         async function actualizarDashboard() {
             toggleLoader(true);
             document.getElementById('api-alert').classList.add('hidden');
 
-            try {
-                // Intentamos obtener todos los registros.
-                // Si el backend no soporta 'readAll', esto fallará o devolverá vacío.
-                const response = await fetch(`${scriptURL}?action=readAll`);
-                const data = await response.json();
+            const parseRecords = (data) => {
+                if (!data) return [];
+                if (typeof data === 'string') { try { data = JSON.parse(data); } catch(e) { return []; } }
+                
+                // Manejo de diferentes estructuras de respuesta de Apps Script
+                if (data.status === 'success' || data.status === 'ok') {
+                     if (Array.isArray(data.data)) return data.data;
+                     if (data.data && typeof data.data === 'object') return Object.values(data.data);
+                }
+                if (Array.isArray(data)) return data;
+                if (data.records && Array.isArray(data.records)) return data.records;
+                
+                // Objeto de objetos (tipo Firebase)
+                if (typeof data === 'object') {
+                    const values = Object.values(data);
+                    if (values.length > 0 && typeof values[0] === 'object') return values;
+                }
+                return [];
+            };
 
-                if (data.status === 'success' && Array.isArray(data.data)) {
-                    renderDashboard(data.data);
+            try {
+                // Usamos GET explícito con el parámetro action=readAll
+                const response = await fetch(scriptURL + '?action=readAll', {
+                    method: 'GET'
+                });
+                
+                if (!response.ok) throw new Error("Error en la respuesta del servidor");
+                
+                const rawData = await response.json();
+                console.log("Datos del Dashboard recibidos:", rawData);
+                
+                const records = parseRecords(rawData);
+                
+                if (records && records.length > 0) {
+                    renderDashboard(records);
                 } else {
-                    document.getElementById('api-alert').classList.remove('hidden');
-                    // Renderizar con datos vacíos o de ejemplo para mostrar la estructura
-                    renderDashboard([]);
+                    console.warn("No se encontraron registros en el dashboard.");
+                    renderDashboard([]); 
+                    // document.getElementById('api-alert').classList.remove('hidden'); // Descomentar si quieres alerta visual
                 }
             } catch (error) {
                 console.error("Error al cargar dashboard:", error);
@@ -276,12 +307,18 @@
             }
         }
 
-        function renderDashboard(data) {
+        function renderDashboard(rawData) {
+            const data = Array.isArray(rawData) ? rawData.filter(p => p && typeof p === 'object') : [];
+            
             // Stats
             const total = data.length;
-            const avgAvance = total > 0 ? (data.reduce((acc, curr) => acc + parseInt(curr.progreso || 0), 0) / total).toFixed(1) : 0;
-            const altaPrioridad = data.filter(p => p.prioridad === 'Alta').length;
-            const regionalesUnicas = new Set(data.map(p => p.regional)).size;
+            const avgAvance = total > 0 ? (data.reduce((acc, curr) => {
+                const progStr = (curr.progreso || "0").toString().replace('%', '');
+                const val = parseInt(progStr);
+                return acc + (isNaN(val) ? 0 : val);
+            }, 0) / total).toFixed(1) : 0;
+            const altaPrioridad = data.filter(p => (p.prioridad || '').toLowerCase() === 'alta').length;
+            const regionalesUnicas = new Set(data.map(p => p.regional).filter(r => r)).size;
 
             document.getElementById('stat-total').innerText = total;
             document.getElementById('stat-avance').innerText = `${avgAvance}%`;
@@ -291,7 +328,8 @@
             // Chart Proyectos por Regional
             const regionalesCount = {};
             data.forEach(p => {
-                regionalesCount[p.regional] = (regionalesCount[p.regional] || 0) + 1;
+                const reg = p.regional || 'No especificada';
+                regionalesCount[reg] = (regionalesCount[reg] || 0) + 1;
             });
             renderChart('chartRegionales', 'bar', {
                 labels: Object.keys(regionalesCount),
@@ -307,7 +345,8 @@
             // Chart Proyectos por Taller
             const talleresCount = {};
             data.forEach(p => {
-                talleresCount[p.taller] = (talleresCount[p.taller] || 0) + 1;
+                const tall = p.taller || 'No especificado';
+                talleresCount[tall] = (talleresCount[tall] || 0) + 1;
             });
             renderChart('chartTalleres', 'doughnut', {
                 labels: Object.keys(talleresCount),
@@ -337,41 +376,65 @@
         }
 
         function setPriority(level) {
+            if (!level) return;
+            const mapping = { 'baja': 'low', 'media': 'medium', 'alta': 'high' };
+            const normalizedLevel = level.toLowerCase();
+            const activeClass = mapping[normalizedLevel] || normalizedLevel;
+
             document.getElementById('prioridad').value = level;
             const buttons = document.querySelectorAll('.priority-btn');
             buttons.forEach(btn => {
-                btn.classList.remove('active-high', 'active-medium', 'active-low', 'text-white');
-                if(btn.innerText === level) btn.classList.add('active-' + level.toLowerCase(), 'text-white');
+                btn.classList.remove('active-high', 'active-medium', 'active-low', 'text-white', 'bg-white');
+                if(btn.innerText.toLowerCase() === normalizedLevel) {
+                    btn.classList.add('active-' + activeClass, 'text-white');
+                } else {
+                    btn.classList.add('bg-white');
+                }
             });
         }
 
-        // --- FUNCIÓN DE BÚSQUEDA PROFESIONAL ---
+        // --- FUNCIÓN DE BÚSQUEDA ---
         async function buscarPorCedula() {
-            const cedulaBusqueda = document.getElementById('busquedaCedula').value;
+            const cedulaBusqueda = document.getElementById('busquedaCedula').value.trim();
             if (!cedulaBusqueda) return showToast("Ingrese una cédula para buscar", "error");
 
             toggleLoader(true);
             const searchResults = document.getElementById('search-results');
             searchResults.classList.add('hidden');
-
+            
             try {
-                const response = await fetch(`${scriptURL}?buscarCedula=${cedulaBusqueda}`);
+                console.log("Buscando cédula:", cedulaBusqueda);
+                // Aquí mantenemos POST si tu backend lo exige para search, o podríamos cambiar a GET si falla
+                const response = await fetch(scriptURL, {
+                    method: 'POST',
+                    body: JSON.stringify({ action: 'search', buscarCedula: cedulaBusqueda })
+                });
                 const data = await response.json();
+                console.log("Resultado búsqueda:", data);
 
-                if (data.status === 'success') {
-                    const results = Array.isArray(data.data) ? data.data : [data.data];
+                const records = (data.status === 'success' || data.status === 'ok') ?
+                    (Array.isArray(data.data) ? data.data : (data.data ? [data.data] : [])) : [];
+
+                if (records.length === 0 || (records.length === 1 && !records[0].nombre && !records[0].nombreProyecto)) {
+                    // Fallback a GET si el POST falla
+                    const fallbackResponse = await fetch(scriptURL + '?buscarCedula=' + encodeURIComponent(cedulaBusqueda));
+                    const fallbackData = await fallbackResponse.json();
+                    const fallbackRecords = (fallbackData.status === 'success') ?
+                        (Array.isArray(fallbackData.data) ? fallbackData.data : [fallbackData.data]) : [];
                     
-                    if (results.length === 0 || (results.length === 1 && !results[0].nombre)) {
-                        showToast("❌ No se encontró ningún registro con esa cédula.", "error");
-                    } else if (results.length === 1) {
-                        cargarProyecto(results[0]);
-                        showToast("✅ Registro encontrado y cargado.");
+                    if (fallbackRecords.length > 0) {
+                        if (fallbackRecords.length === 1) cargarProyecto(fallbackRecords[0]);
+                        else mostrarListaProyectos(fallbackRecords);
+                        showToast("✅ Registro encontrado.");
                     } else {
-                        mostrarListaProyectos(results);
-                        showToast(`✅ se encontraron ${results.length} proyectos.`);
+                        showToast("❌ No se encontró ningún registro con esa cédula.", "error");
                     }
+                } else if (records.length === 1) {
+                    cargarProyecto(records[0]);
+                    showToast("✅ Registro encontrado.");
                 } else {
-                    showToast("❌ No se encontró ningún registro con esa cédula.", "error");
+                    mostrarListaProyectos(records);
+                    showToast(`✅ Se encontraron ${records.length} proyectos.`);
                 }
             } catch (error) {
                 console.error(error);
@@ -390,7 +453,7 @@
                 const tr = document.createElement('tr');
                 tr.className = "border-b hover:bg-slate-50 transition-colors";
                 tr.innerHTML = `
-                    <td class="py-3 font-medium text-slate-700">${p.nombre}</td>
+                    <td class="py-3 font-medium text-slate-700">${p.nombre || p.nombreProyecto}</td>
                     <td class="py-3 text-slate-600">${p.responsable}</td>
                     <td class="py-3 text-slate-600">${p.regional}</td>
                     <td class="py-3 text-right">
@@ -402,20 +465,20 @@
                 `;
                 tbody.appendChild(tr);
             });
-
             searchResults.classList.remove('hidden');
             searchResults.scrollIntoView({ behavior: 'smooth' });
         }
 
         function cargarProyecto(p) {
+            console.log("Cargando proyecto:", p);
             document.getElementById('regional').value = p.regional || '';
             document.getElementById('taller').value = p.taller || '';
-            document.getElementById('nombreProyecto').value = p.nombre || '';
+            document.getElementById('nombreProyecto').value = p.nombre || p.nombreProyecto || '';
             document.getElementById('cedula').value = p.cedula || '';
             document.getElementById('responsable').value = p.responsable || '';
             document.getElementById('telefono').value = p.telefono || '';
             document.getElementById('email').value = p.email || '';
-            document.getElementById('fechaSeguimiento').value = p.fechaSeguimiento || '';
+            document.getElementById('fechaSeguimiento').value = p.fechaSeguimiento ? p.fechaSeguimiento.split('T')[0] : ''; // Ajuste para fecha
             document.getElementById('recomendaciones').value = p.recomendaciones || '';
 
             const prog = (p.progreso || "0").toString().replace('%', '');
@@ -439,8 +502,8 @@
             const cedula = document.getElementById('cedula').value;
             const telefono = document.getElementById('telefono').value;
 
-            if (!/^\d{3}-\d{7}-\d{1}$/.test(cedula)) {
-                return showToast("Cédula inválida. Use el formato 000-0000000-0", "error");
+            if (!/^\d{3}-?\d{7}-?\d{1}$/.test(cedula)) {
+                return showToast("Cédula inválida. Use el formato 000-0000000-0 o 11 dígitos", "error");
             }
             if (!/^\d{3}-\d{3}-\d{4}$/.test(telefono) && !/^\d{10}$/.test(telefono)) {
                 return showToast("Teléfono inválido. Use 809-000-0000 o 10 dígitos", "error");
@@ -456,6 +519,7 @@
                 regional: document.getElementById('regional').value,
                 taller: document.getElementById('taller').value,
                 nombre: document.getElementById('nombreProyecto').value,
+                nombreProyecto: document.getElementById('nombreProyecto').value,
                 cedula: document.getElementById('cedula').value,
                 responsable: document.getElementById('responsable').value,
                 telefono: document.getElementById('telefono').value,
@@ -466,22 +530,23 @@
                 progreso: document.getElementById('progreso').value
             };
 
-            fetch(scriptURL, { method: 'POST', body: JSON.stringify(payload) })
-                .then(async (response) => {
-                    const data = await response.json();
-                    if (data.status === 'success') {
-                        showToast('✅ Datos guardados correctamente.');
-                        this.reset();
-                        document.getElementById('progresoValor').textContent = '0%';
-                        setPriority('');
-                    } else {
-                        throw new Error(data.message || 'Error al guardar');
-                    }
-                })
-                .catch(err => showToast('Error: ' + err.message, 'error'))
-                .finally(() => {
-                    toggleLoader(false);
-                });
+            console.log("Enviando registro:", payload);
+            
+            fetch(scriptURL + '?action=insert', {
+                method: 'POST',
+                body: JSON.stringify(payload),
+                mode: 'no-cors'
+            })
+            .then(() => {
+                showToast('✅ Registro enviado satisfactoriamente.');
+                this.reset();
+                document.getElementById('progresoValor').textContent = '0%';
+                setPriority('');
+            })
+            .catch(err => showToast('Error al enviar: ' + err.message, 'error'))
+            .finally(() => {
+                toggleLoader(false);
+            });
         });
 
         function limpiarFormulario() {

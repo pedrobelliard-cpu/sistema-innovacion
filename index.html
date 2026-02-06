@@ -267,22 +267,11 @@
                     try { data = JSON.parse(data); } catch(e) {}
                 }
 
-                // Formato estándar {status: 'success', data: [...]}
-                if (data.status === 'success' || data.status === 'ok') {
-                    if (Array.isArray(data.data)) return data.data;
-                    if (data.data && typeof data.data === 'object') {
-                        const values = Object.values(data.data);
-                        const isObjectOfObjects = values.length > 0 && values.every(v => v && typeof v === 'object');
-                        return isObjectOfObjects ? values : [data.data];
-                    }
-                    if (Array.isArray(data.records)) return data.records;
-                    return [];
-                }
-
-                // Otros formatos comunes
+                // Si ya es un array, lo retornamos directamente
                 if (Array.isArray(data)) return data;
 
-                const potentialKeys = ['data', 'records', 'proyectos', 'items', 'registros'];
+                // Buscamos en claves potenciales (independientemente del status)
+                const potentialKeys = ['data', 'records', 'proyectos', 'items', 'registros', 'proyectos_registrados'];
                 for (const key of potentialKeys) {
                     if (data[key] && Array.isArray(data[key])) return data[key];
                     if (data[key] && typeof data[key] === 'object') {
@@ -291,8 +280,16 @@
                     }
                 }
 
-                // Manejo de objeto-de-objetos sin propiedad status
-                if (typeof data === 'object' && !Array.isArray(data)) {
+                // Si tiene status exitoso pero la data está en un formato plano u otro
+                if (data.status === 'success' || data.status === 'ok' || data.success === true) {
+                    if (data.data && typeof data.data === 'object' && !Array.isArray(data.data)) return [data.data];
+                    // Si no encontramos nada arriba, pero el status es éxito, devolvemos array vacío
+                    // para evitar que se interprete como fallo de red
+                    return [];
+                }
+
+                // Manejo de objeto-de-objetos directo (sin clave envolvente)
+                if (typeof data === 'object' && data !== null) {
                     const values = Object.values(data);
                     if (values.length > 0 && values.every(v => v && typeof v === 'object')) {
                         return values;
@@ -304,39 +301,51 @@
 
             try {
                 let records = null;
+                const actions = ['readAll', 'read', 'all', 'search', 'get_proyectos'];
 
-                // Intento 1: POST con action: 'readAll'
-                try {
-                    console.log("Intentando obtener datos (POST readAll)...");
-                    const response = await fetch(scriptURL, {
-                        method: 'POST',
-                        body: JSON.stringify({ action: 'readAll' })
-                    });
-                    const data = await response.json();
-                    records = parseRecords(data);
-                } catch (e) { console.warn("Fallo POST readAll", e); }
-
-                // Intento 2: POST con buscarCedula vacía (algunos backends devuelven todo)
-                if (!records) {
+                // Estrategia 1: Intentar POST con cada acción
+                for (const action of actions) {
+                    if (records && records.length > 0) break;
                     try {
-                        console.log("Intentando obtener datos (POST fallback buscarCedula)...");
+                        console.log(`Intentando POST con acción: ${action}`);
+                        const payload = { action: action };
+                        if (action === 'search') payload.buscarCedula = '';
+
                         const response = await fetch(scriptURL, {
                             method: 'POST',
-                            body: JSON.stringify({ buscarCedula: '' })
+                            body: JSON.stringify(payload)
                         });
                         const data = await response.json();
-                        records = parseRecords(data);
-                    } catch (e) { console.warn("Fallo POST fallback", e); }
+                        const parsed = parseRecords(data);
+                        if (parsed && parsed.length > 0) records = parsed;
+                    } catch (e) { console.warn(`Fallo POST ${action}`, e); }
                 }
 
-                // Intento 3: GET con action=readAll (redundancia)
-                if (!records) {
+                // Estrategia 2: Intentar GET con cada acción (fallback por CORS/Backend)
+                if (!records || records.length === 0) {
+                    for (const action of actions) {
+                        if (records && records.length > 0) break;
+                        try {
+                            console.log(`Intentando GET con acción: ${action}`);
+                            let url = `${scriptURL}?action=${action}`;
+                            if (action === 'search') url += '&buscarCedula=';
+
+                            const response = await fetch(url);
+                            const data = await response.json();
+                            const parsed = parseRecords(data);
+                            if (parsed && parsed.length > 0) records = parsed;
+                        } catch (e) { console.warn(`Fallo GET ${action}`, e); }
+                    }
+                }
+
+                // Estrategia 3: GET simple sin parámetros
+                if (!records || records.length === 0) {
                     try {
-                        console.log("Intentando obtener datos (GET readAll)...");
-                        const response = await fetch(scriptURL + '?action=readAll');
+                        const response = await fetch(scriptURL);
                         const data = await response.json();
-                        records = parseRecords(data);
-                    } catch (e) { console.warn("Fallo GET readAll", e); }
+                        const parsed = parseRecords(data);
+                        if (parsed && parsed.length > 0) records = parsed;
+                    } catch (e) { console.warn("Fallo GET simple", e); }
                 }
 
                 if (records) {
@@ -358,12 +367,14 @@
 
         function renderDashboard(rawData) {
             // Filtrar datos inválidos para evitar errores en el procesamiento
-            const data = Array.isArray(rawData) ? rawData.filter(p => p && typeof p === 'object') : [];
+            // Un registro es válido si al menos tiene un nombre, regional o cédula
+            const data = Array.isArray(rawData) ? rawData.filter(p => p && typeof p === 'object' && (p.nombre || p.nombreProyecto || p.regional || p.cedula)) : [];
 
             // Stats
             const total = data.length;
             const avgAvance = total > 0 ? (data.reduce((acc, curr) => {
-                const progStr = (curr.progreso || "0").toString().replace('%', '');
+                const progValue = curr.progreso || "0";
+                const progStr = progValue.toString().replace('%', '');
                 const val = parseInt(progStr);
                 return acc + (isNaN(val) ? 0 : val);
             }, 0) / total).toFixed(1) : 0;
@@ -383,11 +394,12 @@
                 regionalesCount[reg] = (regionalesCount[reg] || 0) + 1;
             });
 
+            const hasRegionalesData = Object.keys(regionalesCount).length > 0;
             renderChart('chartRegionales', 'bar', {
-                labels: Object.keys(regionalesCount),
+                labels: hasRegionalesData ? Object.keys(regionalesCount) : ['Sin datos'],
                 datasets: [{
                     label: 'Proyectos',
-                    data: Object.values(regionalesCount),
+                    data: hasRegionalesData ? Object.values(regionalesCount) : [0],
                     backgroundColor: 'rgba(37, 99, 235, 0.6)',
                     borderColor: 'rgb(37, 99, 235)',
                     borderWidth: 1
@@ -401,31 +413,41 @@
                 talleresCount[tall] = (talleresCount[tall] || 0) + 1;
             });
 
+            const hasTalleresData = Object.keys(talleresCount).length > 0;
             renderChart('chartTalleres', 'doughnut', {
-                labels: Object.keys(talleresCount),
+                labels: hasTalleresData ? Object.keys(talleresCount) : ['Sin datos'],
                 datasets: [{
-                    data: Object.values(talleresCount),
-                    backgroundColor: [
+                    data: hasTalleresData ? Object.values(talleresCount) : [1],
+                    backgroundColor: hasTalleresData ? [
                         '#2563eb', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#ec4899', '#06b6d4', '#f97316', '#64748b'
-                    ]
+                    ] : ['#e2e8f0']
                 }]
             });
         }
 
         function renderChart(id, type, data) {
-            if (charts[id]) charts[id].destroy();
-            const ctx = document.getElementById(id).getContext('2d');
-            charts[id] = new Chart(ctx, {
-                type: type,
-                data: data,
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: { position: type === 'doughnut' ? 'right' : 'top' }
+            try {
+                if (charts[id]) charts[id].destroy();
+                const canvas = document.getElementById(id);
+                if (!canvas) return;
+                const ctx = canvas.getContext('2d');
+                charts[id] = new Chart(ctx, {
+                    type: type,
+                    data: data,
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                display: data.labels[0] !== 'Sin datos',
+                                position: type === 'doughnut' ? 'right' : 'top'
+                            }
+                        }
                     }
-                }
-            });
+                });
+            } catch (err) {
+                console.error(`Error al renderizar gráfico ${id}:`, err);
+            }
         }
 
         function setPriority(level) {

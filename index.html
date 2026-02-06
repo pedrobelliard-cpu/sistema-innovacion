@@ -255,16 +255,29 @@
             document.getElementById('api-alert').classList.add('hidden');
 
             try {
-                // Intentamos obtener todos los registros.
-                // Si el backend no soporta 'readAll', esto fallará o devolverá vacío.
-                const response = await fetch(`${scriptURL}?action=readAll`);
+                // Agregamos un timestamp para evitar cache del navegador y asegurar datos frescos
+                const response = await fetch(`${scriptURL}?action=readAll&_=${Date.now()}`);
                 const data = await response.json();
 
-                if (data.status === 'success' && Array.isArray(data.data)) {
-                    renderDashboard(data.data);
+                console.log("Dashboard: Datos recibidos", data);
+
+                let records = null;
+                if (data.status === 'success') {
+                    // Maneja tanto arreglos como objetos individuales para consistencia con búsqueda
+                    records = Array.isArray(data.data) ? data.data : (data.data ? [data.data] : []);
+                } else if (Array.isArray(data)) {
+                    // Soporte para cuando el backend devuelve el arreglo directamente
+                    records = data;
+                }
+
+                if (records !== null) {
+                    renderDashboard(records);
+                    if (records.length === 0) {
+                        console.info("Dashboard: No se encontraron registros.");
+                    }
                 } else {
+                    console.error("Dashboard: Formato de respuesta no reconocido", data);
                     document.getElementById('api-alert').classList.remove('hidden');
-                    // Renderizar con datos vacíos o de ejemplo para mostrar la estructura
                     renderDashboard([]);
                 }
             } catch (error) {
@@ -276,12 +289,20 @@
             }
         }
 
-        function renderDashboard(data) {
+        function renderDashboard(rawData) {
+            // Filtrar datos inválidos para evitar errores en el procesamiento
+            const data = Array.isArray(rawData) ? rawData.filter(p => p && typeof p === 'object') : [];
+
             // Stats
             const total = data.length;
-            const avgAvance = total > 0 ? (data.reduce((acc, curr) => acc + parseInt(curr.progreso || 0), 0) / total).toFixed(1) : 0;
-            const altaPrioridad = data.filter(p => p.prioridad === 'Alta').length;
-            const regionalesUnicas = new Set(data.map(p => p.regional)).size;
+            const avgAvance = total > 0 ? (data.reduce((acc, curr) => {
+                const progStr = (curr.progreso || "0").toString().replace('%', '');
+                const val = parseInt(progStr);
+                return acc + (isNaN(val) ? 0 : val);
+            }, 0) / total).toFixed(1) : 0;
+
+            const altaPrioridad = data.filter(p => (p.prioridad || '').toLowerCase() === 'alta').length;
+            const regionalesUnicas = new Set(data.map(p => p.regional).filter(r => r)).size;
 
             document.getElementById('stat-total').innerText = total;
             document.getElementById('stat-avance').innerText = `${avgAvance}%`;
@@ -291,8 +312,10 @@
             // Chart Proyectos por Regional
             const regionalesCount = {};
             data.forEach(p => {
-                regionalesCount[p.regional] = (regionalesCount[p.regional] || 0) + 1;
+                const reg = p.regional || 'No especificada';
+                regionalesCount[reg] = (regionalesCount[reg] || 0) + 1;
             });
+
             renderChart('chartRegionales', 'bar', {
                 labels: Object.keys(regionalesCount),
                 datasets: [{
@@ -307,8 +330,10 @@
             // Chart Proyectos por Taller
             const talleresCount = {};
             data.forEach(p => {
-                talleresCount[p.taller] = (talleresCount[p.taller] || 0) + 1;
+                const tall = p.taller || 'No especificado';
+                talleresCount[tall] = (talleresCount[tall] || 0) + 1;
             });
+
             renderChart('chartTalleres', 'doughnut', {
                 labels: Object.keys(talleresCount),
                 datasets: [{

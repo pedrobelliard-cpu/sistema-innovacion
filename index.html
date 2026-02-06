@@ -275,8 +275,19 @@
 
                 // Otros formatos comunes
                 if (Array.isArray(data)) return data;
-                if (data.data && Array.isArray(data.data)) return data.data;
-                if (data.records && Array.isArray(data.records)) return data.records;
+
+                const potentialKeys = ['data', 'records', 'proyectos', 'items'];
+                for (const key of potentialKeys) {
+                    if (data[key] && Array.isArray(data[key])) return data[key];
+                }
+
+                // Manejo de objeto-de-objetos sin propiedad status
+                if (typeof data === 'object' && !Array.isArray(data)) {
+                    const values = Object.values(data);
+                    if (values.length > 0 && values.every(v => v && typeof v === 'object')) {
+                        return values;
+                    }
+                }
 
                 return null;
             };
@@ -284,7 +295,10 @@
             try {
                 let records = null;
                 try {
-                    const response = await fetch(`${scriptURL}?action=readAll&_=${Date.now()}`);
+                    const response = await fetch(scriptURL, {
+                        method: 'POST',
+                        body: JSON.stringify({ action: 'readAll' })
+                    });
                     const data = await response.json();
                     console.log("Dashboard: Datos recibidos (readAll)", data);
                     records = parseRecords(data);
@@ -295,7 +309,10 @@
                 // Fallback si readAll falló o no devolvió datos válidos
                 if (records === null) {
                     try {
-                        const response = await fetch(`${scriptURL}?buscarCedula=&_=${Date.now()}`);
+                        const response = await fetch(scriptURL, {
+                            method: 'POST',
+                            body: JSON.stringify({ buscarCedula: '' })
+                        });
                         const data = await response.json();
                         console.log("Dashboard: Datos recibidos (fallback)", data);
                         records = parseRecords(data);
@@ -418,7 +435,10 @@
             searchResults.classList.add('hidden');
 
             try {
-                const response = await fetch(`${scriptURL}?buscarCedula=${cedulaBusqueda}`);
+                const response = await fetch(scriptURL, {
+                    method: 'POST',
+                    body: JSON.stringify({ buscarCedula: cedulaBusqueda })
+                });
                 const data = await response.json();
 
                 if (data.status === 'success') {
@@ -514,23 +534,24 @@
 
             toggleLoader(true);
 
-            const params = new URLSearchParams();
-            params.append('action', 'insert');
-            params.append('regional', document.getElementById('regional').value);
-            params.append('taller', document.getElementById('taller').value);
-            params.append('nombre', document.getElementById('nombreProyecto').value);
-            params.append('cedula', document.getElementById('cedula').value);
-            params.append('responsable', document.getElementById('responsable').value);
-            params.append('telefono', document.getElementById('telefono').value);
-            params.append('email', document.getElementById('email').value);
-            params.append('fechaSeguimiento', document.getElementById('fechaSeguimiento').value);
-            params.append('prioridad', document.getElementById('prioridad').value);
-            params.append('recomendaciones', document.getElementById('recomendaciones').value);
-            params.append('progreso', document.getElementById('progreso').value);
+            const payload = {
+                action: 'insert',
+                regional: document.getElementById('regional').value,
+                taller: document.getElementById('taller').value,
+                nombre: document.getElementById('nombreProyecto').value,
+                cedula: document.getElementById('cedula').value,
+                responsable: document.getElementById('responsable').value,
+                telefono: document.getElementById('telefono').value,
+                email: document.getElementById('email').value,
+                fechaSeguimiento: document.getElementById('fechaSeguimiento').value,
+                prioridad: document.getElementById('prioridad').value,
+                recomendaciones: document.getElementById('recomendaciones').value,
+                progreso: document.getElementById('progreso').value
+            };
 
             fetch(scriptURL, {
                 method: 'POST',
-                body: params,
+                body: JSON.stringify(payload),
                 mode: 'no-cors'
             })
             .then(() => {

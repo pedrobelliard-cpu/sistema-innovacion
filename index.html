@@ -258,42 +258,61 @@
             toggleLoader(true);
             document.getElementById('api-alert').classList.add('hidden');
 
-            try {
-                // Agregamos un timestamp para evitar cache del navegador y asegurar datos frescos
-                const response = await fetch(`${scriptURL}?action=readAll&_=${Date.now()}`);
-                const data = await response.json();
+            const parseRecords = (data) => {
+                if (!data) return null;
 
-                console.log("Dashboard: Datos recibidos", data);
-
-                let records = null;
+                // Formato estándar {status: 'success', data: [...]}
                 if (data.status === 'success') {
-                    if (Array.isArray(data.data)) {
-                        records = data.data;
-                    } else if (data.data && typeof data.data === 'object') {
+                    if (Array.isArray(data.data)) return data.data;
+                    if (data.data && typeof data.data === 'object') {
                         // Maneja el caso de objeto-de-objetos (común en GAS)
                         const values = Object.values(data.data);
                         const isObjectOfObjects = values.length > 0 && values.every(v => v && typeof v === 'object');
-                        records = isObjectOfObjects ? values : [data.data];
-                    } else {
-                        records = [];
+                        return isObjectOfObjects ? values : [data.data];
                     }
-                } else if (Array.isArray(data)) {
-                    // Soporte para cuando el backend devuelve el arreglo directamente
-                    records = data;
+                    return [];
+                }
+
+                // Otros formatos comunes
+                if (Array.isArray(data)) return data;
+                if (data.data && Array.isArray(data.data)) return data.data;
+                if (data.records && Array.isArray(data.records)) return data.records;
+
+                return null;
+            };
+
+            try {
+                let records = null;
+                try {
+                    const response = await fetch(`${scriptURL}?action=readAll&_=${Date.now()}`);
+                    const data = await response.json();
+                    console.log("Dashboard: Datos recibidos (readAll)", data);
+                    records = parseRecords(data);
+                } catch (e) {
+                    console.warn("Dashboard: Falló readAll, intentando fallback", e);
+                }
+
+                // Fallback si readAll falló o no devolvió datos válidos
+                if (records === null) {
+                    try {
+                        const response = await fetch(`${scriptURL}?buscarCedula=&_=${Date.now()}`);
+                        const data = await response.json();
+                        console.log("Dashboard: Datos recibidos (fallback)", data);
+                        records = parseRecords(data);
+                    } catch (e) {
+                        console.error("Dashboard: Fallback también falló", e);
+                    }
                 }
 
                 if (records !== null) {
                     renderDashboard(records);
-                    if (records.length === 0) {
-                        console.info("Dashboard: No se encontraron registros.");
-                    }
                 } else {
-                    console.error("Dashboard: Formato de respuesta no reconocido", data);
+                    console.error("Dashboard: No se pudo obtener ningún registro.");
                     document.getElementById('api-alert').classList.remove('hidden');
                     renderDashboard([]);
                 }
             } catch (error) {
-                console.error("Error al cargar dashboard:", error);
+                console.error("Error crítico al cargar dashboard:", error);
                 document.getElementById('api-alert').classList.remove('hidden');
                 renderDashboard([]);
             } finally {
@@ -495,23 +514,23 @@
 
             toggleLoader(true);
 
-            const formData = new FormData();
-            formData.append('action', 'insert');
-            formData.append('regional', document.getElementById('regional').value);
-            formData.append('taller', document.getElementById('taller').value);
-            formData.append('nombre', document.getElementById('nombreProyecto').value);
-            formData.append('cedula', document.getElementById('cedula').value);
-            formData.append('responsable', document.getElementById('responsable').value);
-            formData.append('telefono', document.getElementById('telefono').value);
-            formData.append('email', document.getElementById('email').value);
-            formData.append('fechaSeguimiento', document.getElementById('fechaSeguimiento').value);
-            formData.append('prioridad', document.getElementById('prioridad').value);
-            formData.append('recomendaciones', document.getElementById('recomendaciones').value);
-            formData.append('progreso', document.getElementById('progreso').value);
+            const params = new URLSearchParams();
+            params.append('action', 'insert');
+            params.append('regional', document.getElementById('regional').value);
+            params.append('taller', document.getElementById('taller').value);
+            params.append('nombre', document.getElementById('nombreProyecto').value);
+            params.append('cedula', document.getElementById('cedula').value);
+            params.append('responsable', document.getElementById('responsable').value);
+            params.append('telefono', document.getElementById('telefono').value);
+            params.append('email', document.getElementById('email').value);
+            params.append('fechaSeguimiento', document.getElementById('fechaSeguimiento').value);
+            params.append('prioridad', document.getElementById('prioridad').value);
+            params.append('recomendaciones', document.getElementById('recomendaciones').value);
+            params.append('progreso', document.getElementById('progreso').value);
 
             fetch(scriptURL, {
                 method: 'POST',
-                body: formData,
+                body: params,
                 mode: 'no-cors'
             })
             .then(() => {

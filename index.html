@@ -255,25 +255,50 @@
             document.getElementById('api-alert').classList.add('hidden');
 
             try {
-                // Agregamos un timestamp para evitar cache del navegador y asegurar datos frescos
-                const response = await fetch(`${scriptURL}?action=readAll&_=${Date.now()}`);
-                const data = await response.json();
+                let response = await fetch(`${scriptURL}?action=readAll&_=${Date.now()}`);
+                let data = await response.json();
 
-                console.log("Dashboard: Datos recibidos", data);
+                console.log("Dashboard: Datos recibidos (action=readAll)", data);
+
+                // Fallback: Si readAll no funciona (not_found), intentamos buscar sin cédula
+                // Algunos backends devuelven todos los registros cuando la búsqueda está vacía.
+                if (data.status === 'not_found') {
+                    console.warn("Dashboard: 'readAll' no encontrado, intentando fallback con 'buscarCedula='");
+                    const fbResponse = await fetch(`${scriptURL}?buscarCedula=&_=${Date.now()}`);
+                    data = await fbResponse.json();
+                    console.log("Dashboard: Datos recibidos (fallback)", data);
+                }
 
                 let records = null;
                 if (data.status === 'success') {
-                    // Maneja tanto arreglos como objetos individuales para consistencia con búsqueda
-                    records = Array.isArray(data.data) ? data.data : (data.data ? [data.data] : []);
+                    if (Array.isArray(data.data)) {
+                        records = data.data;
+                    } else if (data.data && typeof data.data === 'object') {
+                        // Si es un objeto de objetos (ej. { "1": {...}, "2": {...} }), usamos sus valores
+                        const keys = Object.keys(data.data);
+                        if (keys.length > 0 && typeof data.data[keys[0]] === 'object') {
+                            records = Object.values(data.data);
+                        } else {
+                            // Si es un solo objeto de proyecto
+                            records = [data.data];
+                        }
+                    } else {
+                        records = [];
+                    }
                 } else if (Array.isArray(data)) {
-                    // Soporte para cuando el backend devuelve el arreglo directamente
                     records = data;
+                } else if (data && typeof data === 'object' && !data.status) {
+                    // Caso donde el JSON es directamente un objeto de objetos
+                    records = Object.values(data);
                 }
 
                 if (records !== null) {
-                    renderDashboard(records);
-                    if (records.length === 0) {
-                        console.info("Dashboard: No se encontraron registros.");
+                    // Limpieza: Asegurar que cada registro sea un objeto y tenga campos mínimos
+                    const cleanedRecords = records.filter(p => p && typeof p === 'object' && (p.nombre || p.regional || p.cedula));
+                    renderDashboard(cleanedRecords);
+                    if (cleanedRecords.length === 0) {
+                        console.info("Dashboard: No se encontraron registros válidos.");
+                        if (records.length > 0) console.log("Dashboard: Se omitieron registros incompletos", records);
                     }
                 } else {
                     console.error("Dashboard: Formato de respuesta no reconocido", data);
@@ -290,19 +315,27 @@
         }
 
         function renderDashboard(rawData) {
-            // Filtrar datos inválidos para evitar errores en el procesamiento
+            // Filtrar datos inválidos y asegurar que tenemos un arreglo
             const data = Array.isArray(rawData) ? rawData.filter(p => p && typeof p === 'object') : [];
 
             // Stats
             const total = data.length;
             const avgAvance = total > 0 ? (data.reduce((acc, curr) => {
-                const progStr = (curr.progreso || "0").toString().replace('%', '');
-                const val = parseInt(progStr);
+                // Manejar tanto string "80%" como número 80 o string "80"
+                let val = 0;
+                if (curr.progreso !== undefined && curr.progreso !== null) {
+                    const progStr = curr.progreso.toString().replace('%', '').trim();
+                    val = parseInt(progStr);
+                }
                 return acc + (isNaN(val) ? 0 : val);
             }, 0) / total).toFixed(1) : 0;
 
-            const altaPrioridad = data.filter(p => (p.prioridad || '').toLowerCase() === 'alta').length;
-            const regionalesUnicas = new Set(data.map(p => p.regional).filter(r => r)).size;
+            const altaPrioridad = data.filter(p => {
+                const prio = (p.prioridad || '').toString().toLowerCase();
+                return prio === 'alta' || prio === 'high';
+            }).length;
+
+            const regionalesUnicas = new Set(data.map(p => p.regional).filter(r => r && r.toString().trim() !== "")).size;
 
             document.getElementById('stat-total').innerText = total;
             document.getElementById('stat-avance').innerText = `${avgAvance}%`;

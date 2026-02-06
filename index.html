@@ -197,11 +197,15 @@
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div class="bg-white p-6 rounded-2xl shadow-lg border border-blue-100">
                     <h3 class="font-bold text-slate-800 mb-4">Proyectos por Regional</h3>
-                    <canvas id="chartRegionales" height="300"></canvas>
+                    <div class="h-[300px] w-full relative">
+                        <canvas id="chartRegionales"></canvas>
+                    </div>
                 </div>
                 <div class="bg-white p-6 rounded-2xl shadow-lg border border-blue-100">
                     <h3 class="font-bold text-slate-800 mb-4">Proyectos por Taller</h3>
-                    <canvas id="chartTalleres" height="300"></canvas>
+                    <div class="h-[300px] w-full relative">
+                        <canvas id="chartTalleres"></canvas>
+                    </div>
                 </div>
             </div>
 
@@ -255,26 +259,29 @@
             document.getElementById('api-alert').classList.add('hidden');
 
             try {
-                // Agregamos un timestamp para evitar cache del navegador y asegurar datos frescos
-                const response = await fetch(`${scriptURL}?action=readAll&_=${Date.now()}`);
-                const data = await response.json();
+                // Agregamos un timestamp para evitar cache del navegador
+                let response = await fetch(`${scriptURL}?action=readAll&_=${Date.now()}`);
+                let data = await response.json();
 
-                console.log("Dashboard: Datos recibidos", data);
+                console.log("Dashboard: Intento 1 (readAll)", data);
+
+                // Fallback si readAll no es soportado o no devuelve datos válidos
+                if (data.status === 'not_found' || (!Array.isArray(data) && data.status !== 'success')) {
+                    console.warn("Dashboard: readAll falló o no encontrado, intentando fallback con buscarCedula vacío");
+                    response = await fetch(`${scriptURL}?buscarCedula=&_=${Date.now()}`);
+                    data = await response.json();
+                    console.log("Dashboard: Datos de fallback recibidos", data);
+                }
 
                 let records = null;
                 if (data.status === 'success') {
-                    // Maneja tanto arreglos como objetos individuales para consistencia con búsqueda
-                    records = Array.isArray(data.data) ? data.data : (data.data ? [data.data] : []);
+                    records = data.data;
                 } else if (Array.isArray(data)) {
-                    // Soporte para cuando el backend devuelve el arreglo directamente
                     records = data;
                 }
 
                 if (records !== null) {
                     renderDashboard(records);
-                    if (records.length === 0) {
-                        console.info("Dashboard: No se encontraron registros.");
-                    }
                 } else {
                     console.error("Dashboard: Formato de respuesta no reconocido", data);
                     document.getElementById('api-alert').classList.remove('hidden');
@@ -290,13 +297,30 @@
         }
 
         function renderDashboard(rawData) {
-            // Filtrar datos inválidos para evitar errores en el procesamiento
-            const data = Array.isArray(rawData) ? rawData.filter(p => p && typeof p === 'object') : [];
+            // Conversión de objeto-de-objetos a array si es necesario y limpieza básica
+            let dataArray = [];
+            if (Array.isArray(rawData)) {
+                dataArray = rawData;
+            } else if (rawData && typeof rawData === 'object') {
+                // Si es un objeto de objetos (común en respuestas de Google Apps Script convertidas de Map)
+                // O si es un solo objeto de proyecto, lo manejamos.
+                if (rawData.nombre || rawData.cedula) {
+                    dataArray = [rawData];
+                } else {
+                    dataArray = Object.values(rawData);
+                }
+            }
+
+            // Filtrar registros inválidos (sin nombre o nulos) para evitar errores
+            const data = dataArray.filter(p => p && typeof p === 'object' && p.nombre && p.nombre.trim() !== "");
+
+            console.log("Dashboard: Registros procesados para visualización", data.length);
 
             // Stats
             const total = data.length;
             const avgAvance = total > 0 ? (data.reduce((acc, curr) => {
-                const progStr = (curr.progreso || "0").toString().replace('%', '');
+                let progStr = (curr.progreso || "0").toString().toLowerCase().replace('%', '');
+                if (progStr === 'undefined') progStr = "0";
                 const val = parseInt(progStr);
                 return acc + (isNaN(val) ? 0 : val);
             }, 0) / total).toFixed(1) : 0;

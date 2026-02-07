@@ -257,7 +257,6 @@
             }
         }
 
-        // --- FUNCIÓN DASHBOARD OPTIMIZADA ---
         async function actualizarDashboard() {
             toggleLoader(true);
             document.getElementById('api-alert').classList.add('hidden');
@@ -265,16 +264,12 @@
             const parseRecords = (data) => {
                 if (!data) return [];
                 if (typeof data === 'string') { try { data = JSON.parse(data); } catch(e) { return []; } }
-                
-                // Manejo de diferentes estructuras de respuesta de Apps Script
                 if (data.status === 'success' || data.status === 'ok') {
                      if (Array.isArray(data.data)) return data.data;
                      if (data.data && typeof data.data === 'object') return Object.values(data.data);
                 }
                 if (Array.isArray(data)) return data;
                 if (data.records && Array.isArray(data.records)) return data.records;
-                
-                // Objeto de objetos (tipo Firebase)
                 if (typeof data === 'object') {
                     const values = Object.values(data);
                     if (values.length > 0 && typeof values[0] === 'object') return values;
@@ -283,23 +278,16 @@
             };
 
             try {
-                // Usamos GET explícito con el parámetro action=readAll
-                const response = await fetch(scriptURL + '?action=readAll', {
-                    method: 'GET'
-                });
-
+                const response = await fetch(scriptURL + '?action=readAll', { method: 'GET' });
                 if (!response.ok) throw new Error("Error en la respuesta del servidor");
-                
                 const rawData = await response.json();
                 console.log("Datos del Dashboard recibidos:", rawData);
                 const records = parseRecords(rawData);
-                
                 if (records && records.length > 0) {
                     renderDashboard(records);
                 } else {
                     console.warn("No se encontraron registros en el dashboard.");
                     renderDashboard([]); 
-                    // document.getElementById('api-alert').classList.remove('hidden'); // Descomentar si quieres alerta visual
                 }
             } catch (error) {
                 console.error("Error al cargar dashboard:", error);
@@ -311,10 +299,7 @@
         }
 
         function renderDashboard(rawData) {
-            const data = Array.isArray(rawData) ?
-                rawData.filter(p => p && typeof p === 'object') : [];
-            
-            // Stats
+            const data = Array.isArray(rawData) ? rawData.filter(p => p && typeof p === 'object') : [];
             const total = data.length;
             const avgAvance = total > 0 ? (data.reduce((acc, curr) => {
                 const progStr = (curr.progreso || "0").toString().replace('%', '');
@@ -329,54 +314,25 @@
             document.getElementById('stat-alta').innerText = altaPrioridad;
             document.getElementById('stat-regionales').innerText = regionalesUnicas;
 
-            // Chart Proyectos por Regional
             const regionalesCount = {};
-            data.forEach(p => {
-                const reg = p.regional || 'No especificada';
-                regionalesCount[reg] = (regionalesCount[reg] || 0) + 1;
-            });
+            data.forEach(p => { const reg = p.regional || 'No especificada'; regionalesCount[reg] = (regionalesCount[reg] || 0) + 1; });
             renderChart('chartRegionales', 'bar', {
                 labels: Object.keys(regionalesCount),
-                datasets: [{
-                    label: 'Proyectos',
-                    data: Object.values(regionalesCount),
-                    backgroundColor: 'rgba(37, 99, 235, 0.6)',
-                    borderColor: 'rgb(37, 99, 235)',
-                    borderWidth: 1
-                }]
+                datasets: [{ label: 'Proyectos', data: Object.values(regionalesCount), backgroundColor: 'rgba(37, 99, 235, 0.6)', borderColor: 'rgb(37, 99, 235)', borderWidth: 1 }]
             });
 
-            // Chart Proyectos por Taller
             const talleresCount = {};
-            data.forEach(p => {
-                const tall = p.taller || 'No especificado';
-                talleresCount[tall] = (talleresCount[tall] || 0) + 1;
-            });
+            data.forEach(p => { const tall = p.taller || 'No especificado'; talleresCount[tall] = (talleresCount[tall] || 0) + 1; });
             renderChart('chartTalleres', 'doughnut', {
                 labels: Object.keys(talleresCount),
-                datasets: [{
-                    data: Object.values(talleresCount),
-                    backgroundColor: [
-                        '#2563eb', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#ec4899', '#06b6d4', '#f97316', '#64748b'
-                    ]
-                }]
+                datasets: [{ data: Object.values(talleresCount), backgroundColor: ['#2563eb', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#ec4899', '#06b6d4', '#f97316', '#64748b'] }]
             });
         }
 
         function renderChart(id, type, data) {
             if (charts[id]) charts[id].destroy();
             const ctx = document.getElementById(id).getContext('2d');
-            charts[id] = new Chart(ctx, {
-                type: type,
-                data: data,
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: { position: type === 'doughnut' ? 'right' : 'top' }
-                    }
-                }
-            });
+            charts[id] = new Chart(ctx, { type: type, data: data, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: type === 'doughnut' ? 'right' : 'top' } } } });
         }
 
         function setPriority(level) {
@@ -384,7 +340,6 @@
             const mapping = { 'baja': 'low', 'media': 'medium', 'alta': 'high' };
             const normalizedLevel = level.toLowerCase();
             const activeClass = mapping[normalizedLevel] || normalizedLevel;
-
             document.getElementById('prioridad').value = level;
             const buttons = document.querySelectorAll('.priority-btn');
             buttons.forEach(btn => {
@@ -397,7 +352,6 @@
             });
         }
 
-        // --- FUNCIÓN DE BÚSQUEDA ---
         async function buscarPorCedula() {
             const cedulaBusqueda = document.getElementById('busquedaCedula').value.trim();
             if (!cedulaBusqueda) return showToast("Ingrese una cédula para buscar", "error");
@@ -408,7 +362,6 @@
             
             try {
                 console.log("Buscando cédula:", cedulaBusqueda);
-                // Aquí mantenemos POST si tu backend lo exige para search, o podríamos cambiar a GET si falla
                 const response = await fetch(scriptURL, {
                     method: 'POST',
                     body: JSON.stringify({ action: 'search', buscarCedula: cedulaBusqueda })
@@ -420,11 +373,9 @@
                     (Array.isArray(data.data) ? data.data : (data.data ? [data.data] : [])) : [];
 
                 if (records.length === 0 || (records.length === 1 && !records[0].nombre && !records[0].nombreProyecto)) {
-                    // Fallback a GET si el POST falla
                     const fallbackResponse = await fetch(scriptURL + '?buscarCedula=' + encodeURIComponent(cedulaBusqueda));
                     const fallbackData = await fallbackResponse.json();
-                    const fallbackRecords = (fallbackData.status === 'success') ?
-                        (Array.isArray(fallbackData.data) ? fallbackData.data : [fallbackData.data]) : [];
+                    const fallbackRecords = (fallbackData.status === 'success') ? (Array.isArray(fallbackData.data) ? fallbackData.data : [fallbackData.data]) : [];
                     
                     if (fallbackRecords.length > 0) {
                         if (fallbackRecords.length === 1) cargarProyecto(fallbackRecords[0]);
@@ -452,8 +403,7 @@
             const searchResults = document.getElementById('search-results');
             const tbody = document.getElementById('results-table-body');
             tbody.innerHTML = '';
-
-            proyectos.forEach((p, index) => {
+            proyectos.forEach((p) => {
                 const tr = document.createElement('tr');
                 tr.className = "border-b hover:bg-slate-50 transition-colors";
                 tr.innerHTML = `
@@ -482,13 +432,11 @@
             document.getElementById('responsable').value = p.responsable || '';
             document.getElementById('telefono').value = p.telefono || '';
             document.getElementById('email').value = p.email || '';
-            document.getElementById('fechaSeguimiento').value = p.fechaSeguimiento ? p.fechaSeguimiento.split('T')[0] : ''; // Ajuste para fecha
+            document.getElementById('fechaSeguimiento').value = p.fechaSeguimiento ? p.fechaSeguimiento.split('T')[0] : '';
             document.getElementById('recomendaciones').value = p.recomendaciones || '';
-
             const prog = (p.progreso || "0").toString().replace('%', '');
             document.getElementById('progreso').value = prog;
             document.getElementById('progresoValor').textContent = `${prog}%`;
-
             setPriority(p.prioridad || '');
             document.getElementById('search-results').classList.add('hidden');
         }
@@ -499,7 +447,7 @@
         });
 
         // =========================================================
-        // AQUÍ ESTÁ EL CAMBIO PRINCIPAL PARA VALIDAR DUPLICADOS
+        // BLOQUE CORREGIDO: VALIDACIÓN DE DUPLICADOS ACTIVA
         // =========================================================
         document.getElementById('innovationForm').addEventListener('submit', async function(e) {
             e.preventDefault();
@@ -540,7 +488,7 @@
             console.log("Enviando registro:", payload);
             
             try {
-                // CAMBIO: Se eliminó mode: 'no-cors' para leer la respuesta JSON del servidor y usamos await
+                // AQUÍ ESTABA EL ERROR: Se eliminó mode: 'no-cors' para leer la respuesta JSON del servidor
                 const response = await fetch(scriptURL, {
                     method: 'POST',
                     body: JSON.stringify(payload)
@@ -557,8 +505,7 @@
                     limpiarFormulario();
                     document.getElementById('progresoValor').textContent = '0%';
                     setPriority('');
-                    // Actualizamos gráficas si la función existe
-                    if (typeof actualizarDashboard === 'function') actualizarDashboard(); 
+                    actualizarDashboard(); 
                 }
             } catch (err) {
                 console.error(err);
@@ -610,5 +557,4 @@
     </script>
 </body>
 </html>
-
 

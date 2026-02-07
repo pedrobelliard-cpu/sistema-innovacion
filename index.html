@@ -287,12 +287,11 @@
                 const response = await fetch(scriptURL + '?action=readAll', {
                     method: 'GET'
                 });
-                
+
                 if (!response.ok) throw new Error("Error en la respuesta del servidor");
                 
                 const rawData = await response.json();
                 console.log("Datos del Dashboard recibidos:", rawData);
-                
                 const records = parseRecords(rawData);
                 
                 if (records && records.length > 0) {
@@ -312,7 +311,8 @@
         }
 
         function renderDashboard(rawData) {
-            const data = Array.isArray(rawData) ? rawData.filter(p => p && typeof p === 'object') : [];
+            const data = Array.isArray(rawData) ?
+                rawData.filter(p => p && typeof p === 'object') : [];
             
             // Stats
             const total = data.length;
@@ -498,7 +498,10 @@
             document.getElementById('progresoValor').textContent = `${e.target.value}%`;
         });
 
-        document.getElementById('innovationForm').addEventListener('submit', function(e) {
+        // =========================================================
+        // AQUÍ ESTÁ EL CAMBIO PRINCIPAL PARA VALIDAR DUPLICADOS
+        // =========================================================
+        document.getElementById('innovationForm').addEventListener('submit', async function(e) {
             e.preventDefault();
 
             // Validaciones básicas
@@ -536,21 +539,33 @@
 
             console.log("Enviando registro:", payload);
             
-            fetch(scriptURL + '?action=insert', {
-                method: 'POST',
-                body: JSON.stringify(payload),
-                mode: 'no-cors'
-            })
-            .then(() => {
-                showToast('✅ Registro enviado satisfactoriamente.');
-                this.reset();
-                document.getElementById('progresoValor').textContent = '0%';
-                setPriority('');
-            })
-            .catch(err => showToast('Error al enviar: ' + err.message, 'error'))
-            .finally(() => {
+            try {
+                // CAMBIO: Se eliminó mode: 'no-cors' para leer la respuesta JSON del servidor y usamos await
+                const response = await fetch(scriptURL, {
+                    method: 'POST',
+                    body: JSON.stringify(payload)
+                });
+                
+                const data = await response.json(); // Leemos lo que nos dice Google Script
+
+                if (data.status === 'error') {
+                    // Si el servidor encontró un duplicado, mostramos el error y NO borramos el form
+                    showToast("⚠️ " + data.message, "error");
+                } else {
+                    // Si todo salió bien
+                    showToast('✅ Registro enviado satisfactoriamente.');
+                    limpiarFormulario();
+                    document.getElementById('progresoValor').textContent = '0%';
+                    setPriority('');
+                    // Actualizamos gráficas si la función existe
+                    if (typeof actualizarDashboard === 'function') actualizarDashboard(); 
+                }
+            } catch (err) {
+                console.error(err);
+                showToast('Error de conexión: ' + err.message, 'error');
+            } finally {
                 toggleLoader(false);
-            });
+            }
         });
 
         function limpiarFormulario() {
@@ -589,7 +604,7 @@
 
             setTimeout(() => {
                 toast.classList.add('translate-y-10', 'opacity-0');
-                setTimeout(() => toast.remove(), 500);
+                setTimeout(() => toast.remove(), 4000);
             }, 4000);
         }
     </script>
